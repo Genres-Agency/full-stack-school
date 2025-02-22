@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["@react-pdf/renderer"],
   images: {
     remotePatterns: [
       { hostname: "images.pexels.com" },
@@ -12,6 +13,10 @@ const nextConfig = {
       { hostname: "res.cloudinary.com" },
     ],
     unoptimized: true, // This will allow any hostname
+  },
+  webpack: (config) => {
+    config.devtool = "source-map";
+    return config;
   },
 };
 

@@ -1,31 +1,33 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { routeAccessMap } from "./lib/settings";
+import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-const matchers = Object.keys(routeAccessMap).map((route) => ({
-  matcher: createRouteMatcher([route]),
-  allowedRoles: routeAccessMap[route],
-}));
+export default withAuth(
+  function middleware(req) {
+    const isOnDashboard = req.nextUrl.pathname.startsWith("/dashboard");
+    const isOnAuthPage = req.nextUrl.pathname.startsWith("/auth/login");
+    const isAuthenticated = !!req.nextauth?.token;
 
-
-export default clerkMiddleware((auth, req) => {
-  // if (isProtectedRoute(req)) auth().protect()
-
-  const { sessionClaims } = auth();
-  const role = (sessionClaims?.metadata as { role?: string })?.role;
-
-  for (const { matcher, allowedRoles } of matchers) {
-    if (matcher(req) && !allowedRoles.includes(role!)) {
-      return NextResponse.redirect(new URL(`/${role}`, req.url));
+    // Redirect authenticated users away from login
+    if (isOnAuthPage && isAuthenticated) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
+
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      authorized: ({ req, token }) => {
+        // Allow public access to auth pages
+        if (req.nextUrl.pathname.startsWith("/auth/")) {
+          return true;
+        }
+        // Require auth for dashboard
+        return !!token;
+      },
+    },
   }
-});
+);
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/dashboard/:path*", "/auth/login"],
 };

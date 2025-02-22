@@ -12,74 +12,59 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  {
-    name: "Jan",
-    income: 4000,
-    expense: 2400,
-  },
-  {
-    name: "Feb",
-    income: 3000,
-    expense: 1398,
-  },
-  {
-    name: "Mar",
-    income: 7000,
-    expense: 9800,
-  },
-  {
-    name: "Apr",
-    income: 2780,
-    expense: 3908,
-  },
-  {
-    name: "May",
-    income: 1890,
-    expense: 4800,
-  },
-  {
-    name: "Jun",
-    income: 2390,
-    expense: 3800,
-  },
-  {
-    name: "Jul",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Aug",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Sep",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Oct",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Nov",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Dec",
-    income: 3490,
-    expense: 4300,
-  },
-];
+type FinanceData = {
+  name: string;
+  income: number;
+  expense: number;
+}
 
-const FinanceChart = () => {
+interface FinanceChartProps {
+  data: FinanceData[];
+}
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <p className="font-semibold">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <p
+            key={index}
+            style={{ color: entry.color }}
+            className="flex items-center justify-between gap-2"
+          >
+            <span>{entry.name}:</span>
+            <span className="font-semibold">
+              ৳{entry.value.toLocaleString()}
+            </span>
+          </p>
+        ))}
+        <p className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+          <span>Net: </span>
+          <span className={`font-semibold ${
+            payload[0].value - payload[1].value >= 0 
+            ? 'text-green-500' 
+            : 'text-red-500'
+          }`}>
+            ৳{(payload[0].value - payload[1].value).toLocaleString()}
+          </span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+const FinanceChart = ({ data }: FinanceChartProps) => {
   return (
-    <div className="bg-white rounded-xl w-full h-full p-4">
+    <div className="bg-white dark:bg-[#18181b] rounded-xl w-full h-full p-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold">Finance</h1>
+        <div>
+          <h1 className="text-lg font-semibold">Finance</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Monthly Income vs Expense
+          </p>
+        </div>
         <Image src="/moreDark.png" alt="" width={20} height={20} />
       </div>
       <ResponsiveContainer width="100%" height="90%">
@@ -88,7 +73,7 @@ const FinanceChart = () => {
           height={300}
           data={data}
           margin={{
-            top: 5,
+            top: 20,
             right: 30,
             left: 20,
             bottom: 5,
@@ -107,12 +92,13 @@ const FinanceChart = () => {
             tick={{ fill: "#d1d5db" }}
             tickLine={false}
             tickMargin={20}
+            tickFormatter={(value) => `৳${value.toLocaleString()}`}
           />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
           <Legend
             align="center"
             verticalAlign="top"
-            wrapperStyle={{ paddingTop: "10px", paddingBottom: "30px" }}
+            wrapperStyle={{ paddingTop: "10px", paddingBottom: "20px" }}
           />
           <Bar 
             dataKey="income" 
@@ -122,6 +108,7 @@ const FinanceChart = () => {
             fillOpacity={0.9}
             strokeWidth={1}
             stroke="#1a90bc"
+            name="Income"
           />
           <Bar 
             dataKey="expense" 
@@ -131,7 +118,7 @@ const FinanceChart = () => {
             fillOpacity={0.9} 
             strokeWidth={1}
             stroke="#8280c4"
-          
+            name="Expense"
           />
         </BarChart>
       </ResponsiveContainer>

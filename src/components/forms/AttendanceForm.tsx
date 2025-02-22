@@ -3,8 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Dispatch, SetStateAction, useEffect } from "react";
-import { attendanceSchema, AttendanceSchema } from "@/lib/formValidationSchemas"; 
-import { createAttendance, updateAttendance } from "@/lib/actions"; 
+import {
+  attendanceSchema,
+  AttendanceSchema,
+} from "@/lib/formValidationSchemas";
+// import { createAttendance, updateAttendance } from "@/lib/actions";
+import { createAttendance, updateAttendance } from "@/lib/attendenceAction";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import InputField from "../InputField";
@@ -13,15 +17,17 @@ const AttendanceForm = ({
   type,
   data,
   setOpen,
+  relatedData,
 }: {
+  relatedData: any;
   type: "create" | "update";
-  data?: AttendanceSchema; 
+  data?: AttendanceSchema;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<AttendanceSchema>({
     resolver: zodResolver(attendanceSchema),
     defaultValues: data
@@ -31,10 +37,7 @@ const AttendanceForm = ({
 
   const router = useRouter();
 
-
-
   const onSubmit = handleSubmit(async (formData: AttendanceSchema) => {
-
     try {
       const response =
         type === "create"
@@ -42,7 +45,9 @@ const AttendanceForm = ({
           : await updateAttendance(data?.id!, formData);
 
       if (response.success) {
-        toast(`Attendance has been ${type === "create" ? "created" : "updated"}!`);
+        toast(
+          `Attendance has been ${type === "create" ? "created" : "updated"}!`
+        );
         setOpen(false);
         router.refresh();
       } else {
@@ -54,23 +59,52 @@ const AttendanceForm = ({
     }
   });
 
+  const { classes = [] } = relatedData || {};
+
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+    <form
+      className="flex flex-col gap-8 bg-white dark:bg-[#18181b] p-4 rounded-md shadow-md"
+      onSubmit={onSubmit}
+    >
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create Attendance Record" : "Update Attendance Record"}
+        {type === "create"
+          ? "Create Attendance Record"
+          : "Update Attendance Record"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField
+        {/* <InputField
           label="Class Name"
           name="className"
           register={register}
           error={errors?.className}
-        />
+        /> */}
+
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Class</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("classId")}
+            defaultValue={data?.classId}
+          >
+            {classes.length > 0 ? (
+              classes.map((classItem: { id: number; name: string }) => (
+                <option value={classItem.id} key={classItem.id}>
+                  {classItem.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>No classes available</option>
+            )}
+          </select>
+        </div>
         <InputField
           label="Date"
           name="date"
           type="date"
+          defaultValue={
+            data?.date ? data.date.toISOString().slice(0, 10) : undefined
+          }
           register={register}
           error={errors?.date}
         />
@@ -90,7 +124,9 @@ const AttendanceForm = ({
             <option value="SATURDAY">SATURDAY</option>
             <option value="SUNDAY">SUNDAY</option>
           </select>
-          {errors.day && <p className="text-xs text-red-400">{errors.day.message}</p>}
+          {errors.day && (
+            <p className="text-xs text-red-400">{errors.day.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Total Students</label>
@@ -100,7 +136,9 @@ const AttendanceForm = ({
             {...register("total", { valueAsNumber: true })}
             min="0"
           />
-          {errors.total && <p className="text-xs text-red-400">{errors.total.message}</p>}
+          {errors.total && (
+            <p className="text-xs text-red-400">{errors.total.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Present Students</label>
@@ -110,12 +148,22 @@ const AttendanceForm = ({
             {...register("present", { valueAsNumber: true })}
             min="0"
           />
-          {errors.present && <p className="text-xs text-red-400">{errors.present.message}</p>}
+          {errors.present && (
+            <p className="text-xs text-red-400">{errors.present.message}</p>
+          )}
         </div>
       </div>
 
-      <button type="submit" className="bg-blue-400 text-white p-2 rounded-md">
-        {type === "create" ? "Create" : "Update"}
+      <button
+        type="submit"
+        className="bg-blue-500 text-white p-2 rounded-md disabled:opacity-50"
+        disabled={isSubmitting}
+      >
+        {isSubmitting
+          ? "Processing..."
+          : type === "create"
+          ? "Create"
+          : "Update"}
       </button>
     </form>
   );

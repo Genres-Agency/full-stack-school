@@ -222,3 +222,26 @@
 .cl-userButtonPopoverCard{
   width: 200px !important;
 }
+[data-state="open"] .arrow-down {
+  display: block;
+  animation: fadeIn 0.8s ease-in-out;
+}
+[data-state="open"] .arrow-forward {
+  display: none;
+}
+[data-state="closed"] .arrow-down {
+  display: none;
+}
+[data-state="closed"] .arrow-forward {
+  display: block;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

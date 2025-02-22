@@ -1,10 +1,11 @@
-import { UserButton } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
+// import { UserButton } from "@clerk/nextjs";
+// import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const Navbar = async () => {
-  const user = await currentUser();
+  // const user = await currentUser();
   return (
     <div className="flex items-center justify-between p-4 ">
       {/* SEARCH BAR */}
@@ -29,6 +30,7 @@ const Navbar = async () => {
         {/* <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer">
           <Image src="/message.png" alt="" width={20} height={20} />
         </div> */}
+        <ThemeSwitcher />
         <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer relative">
           <Link href={"/announcements"}>
             <Image
@@ -43,16 +45,16 @@ const Navbar = async () => {
             1
           </div>
         </div>
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <span className="text-xs leading-3 font-medium">
             {user?.firstName}
           </span>
           <span className="text-[10px] text-gray-500 text-right">
             {user?.publicMetadata?.role as string}
           </span>
-        </div>
+        </div> */}
         {/* <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full"/> */}
-        <UserButton />
+        {/* <UserButton /> */}
       </div>
     </div>
   );

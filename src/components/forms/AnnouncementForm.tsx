@@ -4,8 +4,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { announcementSchema, AnnouncementSchema } from "@/lib/formValidationSchemas";
-import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
+import {
+  announcementSchema,
+  AnnouncementSchema,
+} from "@/lib/formValidationSchemas";
+// import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
+import {
+  createAnnouncement,
+  updateAnnouncement,
+} from "@/lib/announcementAction";
 import { useFormState } from "react-dom";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -17,7 +24,6 @@ export interface FormProps {
   setOpen: Dispatch<SetStateAction<boolean>>;
   relatedData?: any;
 }
-
 
 const AnnouncementForm: React.FC<FormProps> = ({
   type,
@@ -50,10 +56,13 @@ const AnnouncementForm: React.FC<FormProps> = ({
     const IMAGEBB_API_KEY = process.env.NEXT_PUBLIC_IMAGEBB_API_KEY;
     try {
       setLoading(true);
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMAGEBB_API_KEY}`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${IMAGEBB_API_KEY}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await response.json();
       if (data.success) {
@@ -78,34 +87,77 @@ const AnnouncementForm: React.FC<FormProps> = ({
   const router = useRouter();
   useEffect(() => {
     if (state.success) {
-      toast(`Announcement has been ${type === "create" ? "created" : "updated"}!`);
+      toast(
+        `Announcement has been ${type === "create" ? "created" : "updated"}!`
+      );
       setOpen(false);
       router.refresh();
     }
   }, [state, router, type, setOpen]);
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+    <form
+      className="flex flex-col gap-8 bg-white dark:bg-[#18181b] p-4 rounded-md shadow-md"
+      onSubmit={onSubmit}
+    >
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new announcement" : "Update the announcement"}
+        {type === "create"
+          ? "Create a new announcement"
+          : "Update the announcement"}
       </h1>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField label="Title" name="title" defaultValue={data?.title} register={register} error={errors?.title} />
-        <InputField label="Description" name="description" defaultValue={data?.description} register={register} error={errors?.description} />
-        <InputField label="Start Date" name="startDate" defaultValue={data?.startDate} register={register} error={errors?.startDate} type="datetime-local" />
-        <InputField label="End Date" name="endDate" defaultValue={data?.endDate} register={register} error={errors?.endDate} type="datetime-local" />
-        <div className="flex flex-col gap-4">
-        <label className="text-gray-700 font-medium">Upload Image</label>
-        <ImageUpload defaultImage={data?.img} onFileSelect={setSelectedFile} />
-      </div>
+        <InputField
+          label="Title"
+          name="title"
+          defaultValue={data?.title}
+          register={register}
+          error={errors?.title}
+        />
+        <InputField
+          label="Description"
+          name="description"
+          defaultValue={data?.description}
+          register={register}
+          error={errors?.description}
+        />
+        <InputField
+          label="Start Date"
+          name="startDate"
+          defaultValue={data?.startDate}
+          register={register}
+          error={errors?.startDate}
+          type="datetime-local"
+        />
+        <InputField
+          label="End Date"
+          name="endDate"
+          defaultValue={data?.endDate}
+          register={register}
+          error={errors?.endDate}
+          type="datetime-local"
+        />
+        <div className="flex flex-col gap-4 w-1/4">
+          <label className="text-gray-700 font-medium dark:text-gray-500">
+            Upload Image(optional)
+          </label>
+          <ImageUpload
+            defaultImage={data?.img}
+            onFileSelect={setSelectedFile}
+          />
+        </div>
       </div>
 
       {/* Image Upload */}
-      
 
-      {state.error && <span className="text-red-500">Something went wrong!</span>}
+      {state.error && <span className="text-red-500">{state.error}</span>}
 
-      <button type="submit" disabled={loading} className={`bg-blue-400 text-white p-2 rounded-md ${loading ? "opacity-50" : ""}`}>
+      <button
+        type="submit"
+        disabled={loading}
+        className={`bg-blue-400 text-white p-2 rounded-md ${
+          loading ? "opacity-50" : ""
+        }`}
+      >
         {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
       </button>
     </form>

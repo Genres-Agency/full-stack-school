@@ -7,8 +7,10 @@ import { resultSchema, ResultSchema } from "@/lib/formValidationSchemas";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { toast } from "react-toastify";
-import { createResult } from "@/lib/actions"; // Updated function for batch insert
+// import { createResult } from "@/lib/actions";
+import { createResult } from "@/lib/resultAction";
 import { useRouter } from "next/navigation";
+
 
 const ResultForm = ({
   type,
@@ -23,7 +25,7 @@ const ResultForm = ({
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ResultSchema>({
     resolver: zodResolver(resultSchema),
     defaultValues: data || { studentId: "", subjects: [] }, // Ensure studentId is initialized
@@ -39,10 +41,12 @@ const ResultForm = ({
   const getGrade = (marks: number): string => {
     if (marks >= 80) return "A+";
     if (marks >= 70) return "A";
-    if (marks >= 60) return "B";
-    if (marks >= 50) return "C";
-    if (marks >= 40) return "D";
+    if (marks >= 60) return "A-";
+    if (marks >= 50) return "B";
+    if (marks >= 40) return "C";
+    if (marks >= 33) return "D";
     return "F";
+
   };
 
   const onSubmit = handleSubmit(async (formData: ResultSchema) => {
@@ -86,7 +90,7 @@ const ResultForm = ({
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 p-4 border rounded-lg">
+    <form onSubmit={onSubmit} className="space-y-4 p-4 border rounded-lg bg-white dark:bg-[#18181b]">
       <h1 className="text-xl font-semibold">
         {type === "create" ? "Create New Results" : "Update Results"}
       </h1>
@@ -108,47 +112,44 @@ const ResultForm = ({
       {/* Dynamic fields for subjects and marks */}
       <div>
         <h2 className="text-lg font-semibold">Subjects</h2>
+        
         {fields.map((field, index) => (
           <div key={field.id} className="flex gap-2 mt-4">
-            <Input
-              type="number"
-              placeholder="Subject ID"
-              {...register(`subjects.${index}.subjectId`, {
-                required: "Subject ID is required",
-                min: {
-                  value: 1,
-                  message: "Subject ID must be greater than 0"
-                },
-                valueAsNumber: true
-              })}
-              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            />
-            {errors.subjects?.[index]?.subjectId && (
-              <p className="text-xs text-red-400">
-                {errors.subjects[index]?.subjectId?.message}
-              </p>
-            )}
+            <div className="flex flex-col w-full">
+              <label className="block font-medium">Subject ID:</label>
+              <Input
+                type="number"
+                placeholder="Subject ID"
+                {...register(`subjects.${index}.subjectId`, { valueAsNumber: true})}
+                min={0}
+
+                className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+              />
+              {errors.subjects?.[index]?.subjectId && (
+                <p className="text-xs text-red-400">
+                  {errors.subjects[index]?.subjectId?.message}
+                </p>
+              )}
+            </div>
             
 
-            <Input
-              type="text"
-              placeholder="Subject Name"
-              {...register(`subjects.${index}.subjectName`)}
-              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-              required
-            />
+            <div className="flex flex-col w-full">
+            <label className="block font-medium">Marks:</label>
             <Input
               type="number"
               placeholder="Marks"
               {...register(`subjects.${index}.marks`, { valueAsNumber: true })}
+              min={0}
               className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
               required
             />
-            <Button type="button" className="bg-red-400" onClick={() => remove(index)}>Remove</Button>
+            </div>
+            <Button type="button" className="bg-red-500 hover:text-red-500 mt-6 text-white" onClick={() => remove(index)}>Remove</Button>
+            
           </div>
         ))}
         <Button
-          className="bg-green-400 mt-2"
+          className="bg-green-400 mt-2 flex order-end items-center text-white hover:text-green-500"
           type="button"
           onClick={() => append({ subjectId: 0, subjectName: "", marks: 0 })}
         >
@@ -156,12 +157,13 @@ const ResultForm = ({
         </Button>
       </div>
 
-      <Button
+      <button
         type="submit"
-        className="bg-blue-400 text-white p-2 rounded-md mx-auto block w-1/3"
+        className="bg-blue-500 text-white p-2 rounded-md disabled:opacity-50 w-full"
+        disabled={isSubmitting}
       >
-        {type === "create" ? "Create" : "Update"}
-      </Button>
+        {isSubmitting ? "Processing..." : type === "create" ? "Create" : "Update"}
+      </button>
     </form>
   );
 };

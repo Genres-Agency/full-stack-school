@@ -4,11 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 import { subjectSchema, SubjectSchema } from "@/lib/formValidationSchemas";
-import { createSubject, updateSubject } from "@/lib/actions";
+// import { createSubject, updateSubject } from "@/lib/actions";
+import { createSubject, updateSubject } from "@/lib/subjectAction";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+
 
 const SubjectForm = ({
   type,
@@ -24,7 +26,7 @@ const SubjectForm = ({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SubjectSchema>({
     resolver: zodResolver(subjectSchema),
   });
@@ -40,7 +42,7 @@ const SubjectForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
+    // console.log(data);
     formAction(data);
   });
 
@@ -57,7 +59,7 @@ const SubjectForm = ({
   const { teachers } = relatedData;
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-8 bg-white dark:bg-[#18181b] p-4 rounded-md shadow-md" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
         {type === "create" ? "Create a new subject" : "Update the subject"}
       </h1>
@@ -81,8 +83,12 @@ const SubjectForm = ({
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-      <button type="submit" className="bg-blue-400 text-white p-2 rounded-md">
-        {type === "create" ? "Create" : "Update"}
+     <button
+        type="submit"
+        className="bg-blue-500 text-white p-2 rounded-md disabled:opacity-50"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Processing..." : type === "create" ? "Create" : "Update"}
       </button>
     </form>
 

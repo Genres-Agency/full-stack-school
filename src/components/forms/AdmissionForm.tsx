@@ -3,9 +3,10 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { admissionSchema, AdmissionSchema } from "@/lib/formValidationSchemas";
-import { createAdmission, updateAdmission } from "@/lib/actions";
+// import { createAdmission, updateAdmission } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { createAdmission, updateAdmission } from "@/lib/admissionAction";
 
 export interface FormProps {
   type: "create" | "update";
@@ -72,7 +73,7 @@ const AdmissionForm: React.FC<FormProps> = ({
     "BTEB",
   ];
   return (
-    <div className="w-full mx-auto p-4 bg-white shadow-md rounded-md ">
+    <div className="w-full mx-auto p-4 bg-white dark:bg-[#18181b] shadow-md rounded-md ">
       <h1 className="text-2xl font-bold mb-4 text-center">
         Application Form for Admission
       </h1>
@@ -139,7 +140,7 @@ const AdmissionForm: React.FC<FormProps> = ({
               value="Bangladeshi"
               {...register("nationality")}
               readOnly
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-800"
             />
             {errors.nationality && <p className="text-red-500">{errors.nationality.message}</p>}
           </div>

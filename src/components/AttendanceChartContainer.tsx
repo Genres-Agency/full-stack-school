@@ -4,55 +4,56 @@ import prisma from "@/lib/prisma";
 
 const AttendanceChartContainer = async () => {
   const today = new Date();
-  const dayOfWeek = today.getDay();
-  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const lastSevenDays = new Date();
+  lastSevenDays.setDate(today.getDate() - 6); // Get data from last 7 days, including today
 
-  const lastMonday = new Date(today);
-  lastMonday.setDate(today.getDate() - daysSinceMonday);
-
+  // Fetch attendance data for the past 7 days
   const resData = await prisma.attendance.findMany({
     where: {
       date: {
-        gte: lastMonday,
+        gte: lastSevenDays,
       },
     },
     select: {
+      id: true,
       date: true,
       present: true,
+      total: true,
     },
   });
 
-  // console.log(data)
+  // Days of the last week dynamically (Excluding Friday & Saturday)
+  const daysOfWeek = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(today.getDate() - (6 - i)); // Get last 7 days
+    const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
 
-  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu"];
+    return dayName;
+  }).filter(day => day !== "Fri" && day !== "Sat"); // Exclude Fri & Sat
 
-  const attendanceMap: { [key: string]: { present: number; absent: number } } =
-    {
-      Sun: { present: 30, absent: 20 },
-      Mon: { present: 40, absent: 10 },
-      Tue: { present: 30, absent: 20 },
-      Wed: { present: 40, absent: 10 },
-      Thu: { present: 30, absent: 20 },
-    };
+  // Initialize attendance map
+  const attendanceMap: { [key: string]: { present: number; absent: number; total: number } } = {};
+  daysOfWeek.forEach(day => {
+    attendanceMap[day] = { present: 0, absent: 0, total: 0 };
+  });
 
+  // Process attendance data
   resData.forEach((item) => {
     const itemDate = new Date(item.date);
-    const dayOfWeek = itemDate.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    const dayName = itemDate.toLocaleDateString("en-US", { weekday: "short" });
 
-    // Adjust the index to match the daysOfWeek array
-    const dayIndex = (dayOfWeek + 6) % 7; // This will map Sunday to 0, Monday to 1, ..., Saturday to 6
-    const dayName = daysOfWeek[dayIndex];
-
-    // Check if dayName exists in attendanceMap
-    if (attendanceMap[dayName]) {
-      if (item.present) {
-        attendanceMap[dayName].present += 1;
-      } else {
-        attendanceMap[dayName].absent += 1;
-      }
+    if (attendanceMap[dayName]) { // Only process allowed days
+      attendanceMap[dayName].present += item.present || 0;
+      attendanceMap[dayName].total += item.total || 0;
     }
   });
 
+  // Calculate absentees
+  daysOfWeek.forEach(day => {
+    attendanceMap[day].absent = attendanceMap[day].total - attendanceMap[day].present;
+  });
+
+  // Prepare data for the chart (ordered by last 7 days, excluding Fri & Sat)
   const data = daysOfWeek.map((day) => ({
     name: day,
     present: attendanceMap[day].present,
@@ -60,12 +61,12 @@ const AttendanceChartContainer = async () => {
   }));
 
   return (
-    <div className="bg-white rounded-lg p-4 h-full">
+    <div className="bg-white dark:bg-[#18181b] rounded-lg p-4 h-full">
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold">Attendance</h1>
-        <Image src="/moreDark.png" alt="" width={20} height={20} />
+        <Image src="/moreDark.png" alt="More options" width={20} height={20} />
       </div>
-      <AttendanceChart data={data}/>
+      <AttendanceChart data={data} />
     </div>
   );
 };

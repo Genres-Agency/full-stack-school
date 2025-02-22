@@ -1,41 +1,44 @@
 "use client";
 
-import {
-  deleteClass,
-  deleteExam,
-  deleteStudent,
-  deleteSubject,
-  deleteTeacher,
-  deleteParent,
-  deleteAnnouncement,
-  deleteAttendance,
-  deleteAdmission,
-  deleteResult,
-} from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FormContainerProps } from "./FormContainer";
-
+import { deleteAnnouncement } from "@/lib/announcementAction";
+import { deleteSubject } from "@/lib/subjectAction";
+import { deleteClass } from "@/lib/classAction";
+import { deleteTeacher } from "@/lib/teacherAction";
+import { deleteStudent } from "@/lib/studentAction";
+import { deleteAttendance } from "@/lib/attendenceAction";
+import { deleteParent } from "@/lib/actions";
+import { deleteAdmission } from "@/lib/admissionAction";
+import { deleteResult } from "@/lib/resultAction";
+import { deleteAssignment } from "@/lib/assignmentAction";
+import { deleteFinance } from "@/lib/financeAction";
+import { deletePayment } from "@/lib/paymentAction";
+import ExamRoutineForm from "./forms/ExamRoutineForm";
+import { deleteExamRoutine } from "@/lib/examRoutineActions";
 
 const deleteActionMap = {
   subject: deleteSubject,
   class: deleteClass,
   teacher: deleteTeacher,
   student: deleteStudent,
-  exam: deleteExam,
   parent: deleteParent,
   lesson: deleteSubject,
   admission: deleteAdmission,
-  assignment: deleteSubject,
+  assignment: deleteAssignment,
   result: deleteResult,
   attendance: deleteAttendance,
   event: deleteSubject,
   announcement: deleteAnnouncement,
+  finance: deleteFinance,
+  payment: deletePayment,
+  examRoutine: deleteExamRoutine,
 };
+
 
 // USE LAZY LOADING
 
@@ -63,21 +66,25 @@ const ClassForm = dynamic(() => import("./forms/ClassForm"), {
 const LessonForm = dynamic(() => import("./forms/LessonForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const ExamForm = dynamic(() => import("./forms/ExamForm"), {
-  loading: () => <h1>Loading...</h1>,
-});
 const ParentForm = dynamic(() => import("./forms/ParentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const AttendanceForm = dynamic(() => import("./forms/AttendanceForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const ResultForm = dynamic(() => import("./forms/Resultform"), {
+const ResultForm = dynamic(() => import("./forms/ResultForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const FinanceForm = dynamic(() => import("./forms/FinanceForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const PaymentForm = dynamic(() => import("./forms/PaymentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 // TODO: OTHER FORMS
-
-
 
 const forms: {
   [key: string]: (
@@ -95,13 +102,23 @@ const forms: {
       relatedData={relatedData}
     />
   ),
-  attendance: (setOpen, type, data) => (
-    <AttendanceForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-    />
+  attendance: (setOpen, type, data, relatedData) => (
+    <AttendanceForm  type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
   ),
+  assignment: (setOpen, type, data, relatedData) => {
+
+    console.log( "relatedData", relatedData);
+    return (
+      <AssignmentForm
+        type={type}
+        data={data}
+        setOpen={setOpen}
+        relatedData={relatedData}
+      />
+
+
+    );
+  },
   class: (setOpen, type, data, relatedData) => (
     <ClassForm
       type={type}
@@ -110,16 +127,28 @@ const forms: {
       relatedData={relatedData}
     />
   ),
-  
+  finance: (setOpen, type, data, relatedData) => (
+    <FinanceForm type={type} data={data} setOpen={setOpen} />
+  ),
+  payment: (setOpen, type, data, relatedData) => (
+    <PaymentForm type={type} data={data} setOpen={setOpen} />
+  ),
+
   teacher: (setOpen, type, data, relatedData) => {
     // No need for Cloudinary configuration
+
     return (
       <TeacherForm
         type={type}
         data={data}
         setOpen={setOpen}
-        relatedData={relatedData}
+        relatedData={{
+          subjects: relatedData?.subjects,
+          classes: relatedData?.classes,
+          teachers: relatedData?.teachers,
+        }}
       />
+
     );
   },
   announcement: (setOpen, type, data, relatedData) => {
@@ -144,7 +173,7 @@ const forms: {
       />
     );
   },
-  
+
   student: (setOpen, type, data, relatedData) => {
     // No need for Cloudinary configuration
     return (
@@ -156,10 +185,9 @@ const forms: {
       />
     );
   },
-  exam: (setOpen, type, data, relatedData) => {
-    // No need for Cloudinary configuration
+  examRoutine: (setOpen, type, data, relatedData) => {
     return (
-      <ExamForm
+      <ExamRoutineForm
         type={type}
         data={data}
         setOpen={setOpen}
@@ -167,6 +195,7 @@ const forms: {
       />
     );
   },
+
   lesson: (setOpen, type, data, relatedData) => {
     // No need for Cloudinary configuration
     return (
@@ -184,7 +213,7 @@ const forms: {
   ),
   result: (setOpen, type, data, relatedData) => (
     // <ResultForm type={type} data={data} setOpen={setOpen} />
-    <ResultForm type={type} data={data} setOpen={setOpen}  />
+    <ResultForm type={type} data={data} setOpen={setOpen} />
   ),
 };
 type TableType = keyof typeof forms;
@@ -207,7 +236,7 @@ const FormModal = ({
   const [open, setOpen] = useState(false);
 
   const Form = () => {
-    const [state, formAction] = useFormState(deleteActionMap[table], {
+    const [state, formAction] = useActionState(deleteActionMap[table], {
       success: false,
       error: false,
     });
@@ -249,8 +278,9 @@ const FormModal = ({
       </button>
       {open && (
         <div className="w-screen h-full absolute left-0 top-0 bg-black bg-opacity-40 z-50 flex items-center justify-center ">
-          <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[80%] xl:w-[80%] 2xl:w-[60%]  overflow-y-auto max-h-[90vh]">
+          <div className="bg-white dark:bg-black p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[80%] xl:w-[80%] 2xl:w-[60%]  overflow-y-auto max-h-[90vh]">
             <Form />
+
             <div
               className="absolute top-4 right-4 cursor-pointer"
               onClick={() => setOpen(false)}
