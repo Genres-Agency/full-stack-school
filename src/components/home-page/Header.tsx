@@ -51,7 +51,7 @@ const Header = () => {
 
                     {/* Desktop navigation */}
                     <nav className="hidden md:block">
-                        <ul className="flex space-x-6">
+                        <ul className="flex pt-[2px] space-x-6">
                             {menuItems.map((item) => (
                                 <li key={item}>
                                     <Link
