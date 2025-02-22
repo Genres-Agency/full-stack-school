@@ -3,11 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { financeSchema, FinanceSchema } from "@/lib/formValidationSchemas";
+import { financeSchema, FinanceSchema } from "@/schema/formValidationSchemas";
 import { createFinance, updateFinance } from "@/lib/financeAction";
-import { Dispatch, SetStateAction, useEffect } from "react";
-import { toast } from "react-toastify";
+import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const FinanceForm = ({
   type,
@@ -38,10 +38,10 @@ const FinanceForm = ({
     try {
       if (type === "create") {
         await createFinance(formData);
-        toast("Finance record created!");
+        toast.success("Finance record created!");
       } else {
         await updateFinance(data?.id!, formData);
-        toast("Finance record updated!");
+        toast.success("Finance record updated!");
       }
       setOpen(false);
       router.refresh();

@@ -1,7 +1,7 @@
 'use client';
 
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import AdmitCardPDF from './AdmitCardPDF';
+import AdmitCardPDF from './pdf/AdmitCardPDF';
 import { MdDownload } from 'react-icons/md';
 
 const AdmitCardButton = ({ 

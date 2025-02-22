@@ -5,10 +5,11 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import Image from "next/image";
-// import { auth } from "@clerk/nextjs/server";
-import DownloadPDF from "@/components/forms/DownloadPDF";
+import Image from "next/image";;
+import DownloadPDF from "@/components/pdf/AdmissionPDF";
 import React from "react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 export type AdmissionList = Admission;
 
@@ -17,9 +18,8 @@ const AdmissionListPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { userId, sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
-  // const currentUserId = userId;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
   
   const columns = [
     {
@@ -48,14 +48,14 @@ const AdmissionListPage = async ({
       accessor: "createdAt",
       className: "hidden md:table-cell",
     },
-    // ...(role === "admin"
-    //   ? [
-    //       {
-    //         header: "Actions",
-    //         accessor: "action",
-    //       },
-    //     ]
-    //   : []),
+    ...(role === "admin"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+          },
+        ]
+      : []),
   ];
   
   const renderRow = (item: AdmissionList) => (
@@ -82,12 +82,12 @@ const AdmissionListPage = async ({
 
       <td>
         <div className="flex items-center gap-2 justify-center">
-          {/* {role === "admin" && ( */}
+          {role === "admin" && (
             <>
               <FormContainer table="admission" type="update" data={item} />
               <FormContainer table="admission" type="delete" id={item.id} />
             </>
-          {/* )} */}
+           )}
           <DownloadPDF {...item} />
         </div>
       </td>
@@ -142,9 +142,9 @@ const AdmissionListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {/* {role === "admin" && ( */}
+            {role === "admin" && (
               <FormContainer table="admission" type="create" />
-            {/* )} */}
+             )} 
           </div>
         </div>
       </div>

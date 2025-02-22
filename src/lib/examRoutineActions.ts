@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ExamRoutineSchema } from "./formValidationSchemas";
+import { ExamRoutineSchema } from "../schema/formValidationSchemas";
 import prisma from "./prisma";
 
 type CurrentState = { success: boolean; error: boolean };

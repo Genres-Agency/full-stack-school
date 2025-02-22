@@ -6,7 +6,7 @@ import { Admission } from "@prisma/client";
 import { IoDownload } from 'react-icons/io5';
 import { FaDownload } from 'react-icons/fa';
 
-const DownloadPDF: React.FC<Admission> = (data) => {
+const AdmissionPDF: React.FC<Admission> = (data) => {
     const downloadPDF = () => {
         const doc = new jsPDF();
         doc.text("Admission Form Data", 20, 10);
@@ -55,4 +55,4 @@ const DownloadPDF: React.FC<Admission> = (data) => {
     );
 };
 
-export default DownloadPDF;
+export default AdmissionPDF;

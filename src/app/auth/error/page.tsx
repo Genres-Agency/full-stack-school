@@ -3,7 +3,7 @@
 export default function AuthErrorPage({
   searchParams,
 }: {
-  searchParams?: { error?: string };
+  searchParams?: Promise<{ error?: string }>;
 }) {
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -12,7 +12,7 @@ export default function AuthErrorPage({
           Authentication Error
         </h1>
         <p className="text-gray-600">
-          {searchParams?.error || "An error occurred during authentication"}
+          {searchParams && typeof searchParams === 'object' && 'error' in searchParams ? String(searchParams.error) : "An error occurred during authentication"}
         </p>
       </div>
     </div>

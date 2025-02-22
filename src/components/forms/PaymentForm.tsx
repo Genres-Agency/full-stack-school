@@ -3,12 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { paymentSchema, PaymentSchema } from "@/lib/formValidationSchemas";
+import { paymentSchema, PaymentSchema } from "@/schema/formValidationSchemas";
 import { createPayment, updatePayment } from "@/lib/paymentAction";
 import { Dispatch, SetStateAction } from "react";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import toast from "react-hot-toast";
 
 const PaymentForm = ({
   type,
@@ -38,13 +38,13 @@ const PaymentForm = ({
     try {
       if (type === "create") {
         await createPayment(formData, { success: false, error: false });
-        toast("Payment record created!");
+        toast.success("Payment record created!");
       } else {
         await updatePayment(data?.id!, formData, {
           success: false,
           error: false,
         });
-        toast("Payment record updated!");
+        toast.success("Payment record updated!");
       }
       setOpen(false);
       router.refresh();

@@ -1,35 +1,12 @@
+// * Comnfiguration for authentication
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import type { NextAuthOptions } from "next-auth";
-import type { JWT } from "next-auth/jwt";
 
-// Define the User type based on your Prisma schema
-type UserWithRole = {
-  id: string;
-  email: string;
-  name: string | null;
-  role: "ADMIN" | "TEACHER" | "STUDENT" | "USER";
-};
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      name: string | null;
-      email: string;
-      role: "ADMIN" | "TEACHER" | "STUDENT" | "USER";
-    };
-  }
-
-  interface User extends UserWithRole {}
-}
-
-declare module "next-auth/jwt" {
-  interface JWT extends UserWithRole {}
-}
 
 const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -70,6 +47,7 @@ const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
+          username: user.username,
           name: user.name,
           role: user.role,
         };
@@ -79,10 +57,20 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id as string;
-        token.email = user.email as string;
-        token.name = user.name;
-        token.role = user.role as "ADMIN" | "TEACHER" | "STUDENT" | "USER";
+        // Type assertion to include username property
+        const userWithUsername = user as {
+          id: string;
+          email: string;
+          username: string;
+          name?: string;
+          role: "ADMIN" | "TEACHER" | "STUDENT" | "USER";
+        };
+
+        token.id = userWithUsername.id;
+        token.email = userWithUsername.email;
+        token.username = userWithUsername.username;
+        token.name = userWithUsername.name;
+        token.role = userWithUsername.role;
       }
       return token;
     },
@@ -90,6 +78,7 @@ const authOptions: NextAuthOptions = {
       if (token) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
+        session.user.username = token.username as string;
         session.user.name = token.name ?? null;
         session.user.role = token.role as
           | "ADMIN"

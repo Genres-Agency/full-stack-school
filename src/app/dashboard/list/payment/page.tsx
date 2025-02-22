@@ -1,15 +1,16 @@
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-// import { auth } from "@clerk/nextjs/server";
 import ClientPaymentList from "@/components/ClientPaymentList";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 const Payments = async ({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
   const { page, perPage } = await searchParams;
   const p = page ? parseInt(page) : 1;
@@ -52,7 +53,7 @@ const Payments = async ({
       payments={payments}
       students={students}
       total={count}
-      // role={role}
+      role={role}
       page={p}
       perPage={itemsPerPage}
     />

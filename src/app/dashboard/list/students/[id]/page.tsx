@@ -4,7 +4,6 @@ import FormContainer from "@/components/FormContainer";
 import Performance from "@/components/Performance";
 // import StudentAttendanceCard from "@/components/StudentAttendanceCard";
 import prisma from "@/lib/prisma";
-// import { auth } from "@clerk/nextjs/server";
 import { Class, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,15 +12,17 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { HiCalendarDateRange } from "react-icons/hi2";
 import { IoMail } from "react-icons/io5";
 import { MdBloodtype } from "react-icons/md";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
+
 
 const SingleStudentPage = async ({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) => {
-  // const { sessionClaims } = await auth();
-
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
   const student:
     | (Student & {
@@ -62,13 +63,13 @@ const SingleStudentPage = async ({
                     <h1 className="text-xl font-semibold">
                       {student.name + " " + student.surname}
                     </h1>
-                    {/* {role === "admin" && ( */}
+                    {role === "admin" && (
                       <FormContainer
                         table="teacher"
                         type="update"
                         data={student}
                       />
-                    {/* )} */}
+                     )} 
                   </div>
                   <div className="text-sm text-gray-400 mt-2  ">
                     <p className="">Student ID: {student.username}</p>

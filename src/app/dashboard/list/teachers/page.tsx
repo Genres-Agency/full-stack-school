@@ -7,7 +7,8 @@ import { Class, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-// import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type TeacherList = Teacher & { subjects: Subject[] } & { classes: Class[] };
 
@@ -16,8 +17,10 @@ const TeacherListPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { userId, sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
+
+
   const columns = [
     {
       header: "Info",
@@ -48,14 +51,14 @@ const TeacherListPage = async ({
       accessor: "address",
       className: "hidden lg:table-cell",
     },
-    // ...(role === "admin"
-    //   ? [
+    ...(role === "admin"
+      ? [
           {
             header: "Actions",
             accessor: "action",
           },
-      //   ]
-      // : []),
+        ]
+      : []),
   ];
 
   const renderRow = (item: TeacherList) => (
@@ -94,10 +97,10 @@ const TeacherListPage = async ({
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          {/* {role === "admin" && ( */}
+          {role === "admin" && (
             
             <FormContainer table="teacher" type="delete" id={item.id} />
-          {/* )} */}
+          )} 
         </div>
       </td>
     </tr>
@@ -160,9 +163,9 @@ const TeacherListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {/* {role === "admin" && ( */}
+            {role === "admin" && (
               <FormContainer table="teacher" type="create" />
-            {/* )} */}
+           )}
           </div>
         </div>
       </div>

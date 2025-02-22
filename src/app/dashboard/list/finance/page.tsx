@@ -5,7 +5,8 @@ import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Finance, Prisma } from "@prisma/client";
-// import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type FinanceList = Finance & {
   // Add any related fields if necessary
@@ -16,8 +17,8 @@ const FinanceListPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { userId, sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
   const columns = [
     {
@@ -37,14 +38,14 @@ const FinanceListPage = async ({
       accessor: "date",
       className: "hidden md:table-cell",
     },
-    // ...(role === "admin"
-    //   ? [
+    ...(role === "admin"
+      ? [
           {
             header: "Actions",
             accessor: "action",
           },
-      //   ]
-      // : []),
+        ]
+      : []),
   ];
 
   const renderRow = (item: FinanceList) => (
@@ -60,12 +61,12 @@ const FinanceListPage = async ({
       </td>
       <td>
         <div className="flex items-center gap-2 justify-center">
-          {/* {role === "admin" && ( */}
+          {role === "admin" && (
             <>
               <FormContainer table="finance" type="update" data={item} />
               <FormContainer table="finance" type="delete" id={item.id} />
             </>
-          {/* )} */}
+          )}
         </div>
       </td>
     </tr>
@@ -108,9 +109,9 @@ const FinanceListPage = async ({
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
-            {/* {role === "admin" &&  */}
+            {role === "admin" && 
             <FormContainer table="finance" type="create" />
-            {/* } */}
+            }
           </div>
         </div>
       </div>

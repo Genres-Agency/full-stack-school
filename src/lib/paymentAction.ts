@@ -1,6 +1,6 @@
 "use server"
 import { PrismaClient } from "@prisma/client";
-import { PaymentSchema } from "./formValidationSchemas";
+import { PaymentSchema } from "../schema/formValidationSchemas";
 import prisma from "./prisma";
 
 type CurrentState = { success: boolean; error: boolean };

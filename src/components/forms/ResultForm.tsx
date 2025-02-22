@@ -3,13 +3,12 @@
 import { Dispatch, SetStateAction } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { resultSchema, ResultSchema } from "@/lib/formValidationSchemas";
+import { resultSchema, ResultSchema } from "@/schema/formValidationSchemas";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { toast } from "react-toastify";
-// import { createResult } from "@/lib/actions";
 import { createResult } from "@/lib/resultAction";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 
 const ResultForm = ({
@@ -54,12 +53,12 @@ const ResultForm = ({
       // console.log("Form Data:", formData);
 
       if (!formData.studentId) {
-        toast("Student ID is missing!");
+        toast.error("Student ID is missing!");
         return;
       }
 
       if (!formData.subjects || formData.subjects.length === 0) {
-        toast("Please add at least one subject.");
+        toast.error("Please add at least one subject.");
         return;
       }
 
@@ -77,15 +76,15 @@ const ResultForm = ({
       const response = await createResult(resultsPayload);
 
       if (response?.success) {
-        toast("Result has been created!");
+        toast.success("Result has been created!");
         setOpen(false);
         router.refresh();
       } else {
-        toast(`Failed: ${response?.error || "Unknown error"}`);
+        toast.error(`Failed: ${response?.error || "Unknown error"}`);
       }
     } catch (error) {
       console.error("Submission Error:", error);
-      toast("Error submitting data. Check console.");
+      toast.error("Error submitting data. Check console.");
     }
   });
 

@@ -6,7 +6,8 @@ import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Class, Lesson, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
-// import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type LessonList = Lesson & { subject: Subject } & { class: Class } & {
   teacher: Teacher;
@@ -19,8 +20,8 @@ const LessonListPage = async ({
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
 
-// const { sessionClaims } = await auth();
-// const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
 
 const columns = [
@@ -37,14 +38,14 @@ const columns = [
     accessor: "teacher",
     className: "hidden md:table-cell",
   },
-  // ...(role === "teacher"
-  //   ? [
+  ...(role === "teacher"
+    ? [
         {
           header: "Actions",
           accessor: "action",
         },
-    //   ]
-    // : []),
+      ]
+    : []),
 ];
 
 const renderRow = (item: LessonList) => (
@@ -60,12 +61,12 @@ const renderRow = (item: LessonList) => (
     </td>
     <td>
       <div className="flex items-center gap-2 justify-center">
-        {/* {role === "teacher" && ( */}
+        {role === "teacher" && (
           <>
             <FormContainer table="lesson" type="update" data={item} />
             <FormContainer table="lesson" type="delete" id={item.id} />
           </>
-        {/* )} */}
+        )}
       </div>
     </td>
   </tr>
@@ -133,9 +134,9 @@ const renderRow = (item: LessonList) => (
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {/* {role === "teacher" &&  */}
+            {role === "teacher" && 
             <FormContainer table="lesson" type="create" />
-            {/* } */}
+            }
           </div>
         </div>
       </div>

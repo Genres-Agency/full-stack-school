@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import {
   StudentSchema,
-} from "./formValidationSchemas";
+} from "../schema/formValidationSchemas";
 import prisma from "./prisma";
 // import { clerkClient } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
@@ -39,27 +39,27 @@ export const createStudent = async (
       //   publicMetadata: { role: "student" },
       // });
   
-      // await prisma.student.create({
-      //   data: {
-      //     id: user.id,
-      //     username: data.username,
-      //     name: data.name,
-      //     surname: data.surname,
-      //     email: data.email || null,
-      //     phone: data.phone || null,
-      //     address: data.address,
-      //     img: data.img || null,
-      //     bloodType: data.bloodType,
-      //     sex: data.sex,
-      //     birthday: data.birthday,
-      //     gradeId: data.gradeId,
-      //     classId: data.classId,
-      //     parentNId: data.parentNId,
-      //     parentName: data.parentName,
-      //   },
-      // });
+      await prisma.student.create({
+        data: {
+          id: data.id,
+          username: data.username,
+          name: data.name,
+          surname: data.surname,
+          email: data.email || null,
+          phone: data.phone || null,
+          address: data.address,
+          img: data.img || null,
+          bloodType: data.bloodType,
+          sex: data.sex,
+          birthday: data.birthday,
+          gradeId: data.gradeId,
+          classId: data.classId,
+          parentNId: data.parentNId,
+          parentName: data.parentName,
+        },
+      });
   
-      // revalidatePath("/list/students");
+      // revalidatePath("/dashboard/list/students");
       return { success: true, error: false };
     } catch (err) {
       console.log(err);
@@ -87,7 +87,7 @@ export const createStudent = async (
           id: data.id,
         },
         data: {
-          ...(data.password !== "" && { password: data.password }),
+          // ...(data.password !== "" && { password: data.password }),
           username: data.username,
           name: data.name,
           surname: data.surname,
@@ -104,7 +104,7 @@ export const createStudent = async (
           parentNId: data.parentNId,
         },
       });
-      // revalidatePath("/list/students");
+      // revalidatePath("/dashboard/list/students");
       return { success: true, error: false };
     } catch (err) {
       console.log(err);
@@ -126,7 +126,7 @@ export const createStudent = async (
         },
       });
   
-      // revalidatePath("/list/students");
+      revalidatePath("/dashboard/list/students");
       return { success: true, error: false };
     } catch (err) {
       console.log(err);

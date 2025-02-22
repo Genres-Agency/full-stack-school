@@ -1,4 +1,4 @@
-import {  z } from "zod";
+import { z } from "zod";
 
 
 export const signInSchema = z.object({
@@ -35,7 +35,7 @@ export type RegisterSchema = z.infer<typeof registerSchema>;
 
 
 export const subjectSchema = z.object({
-  id: z.coerce.number().min(1, { message: "Subject ID is required!" }), 
+  id: z.coerce.number().min(1, { message: "Subject ID is required!" }),
 
   name: z.string().min(1, { message: "Subject name is required!" }),
 });
@@ -57,47 +57,16 @@ export type ClassSchema = z.infer<typeof classSchema>;
 
 export const teacherSchema = z.object({
   id: z.string().optional(),
-
-  username: z
-
-    .string()
-
-    .min(3, { message: "Username must be at least 3 characters long!" })
-
-    .max(20, { message: "Username must be at most 20 characters long!" }),
-
-  password: z
-
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long!" })
-
-    .or(z.literal("")),
-
   name: z.string().min(1, { message: "First name is required!" }),
-
+  username: z.string().min(1, { message: "Username is required!" }),
   surname: z.string().min(1, { message: "Last name is required!" }),
-
-  email: z
-
-    .string().min(1, { message: "Email is required!" })
-
-    .email({ message: "Invalid email address!" })
-
-
-    .or(z.literal("")),
-
+  email: z.string().min(1, { message: "Email is required!" }).email({ message: "Invalid email address!" }).or(z.literal("")),
   phone: z.string().min(1, { message: "Phone number is required!" }),
-
   address: z.string().min(1, { message: "Address is required!" }),
-
   img: z.string().optional(),
-
   bloodType: z.string().min(1, { message: "Blood Group is required!" }),
-
   joiningDate: z.coerce.date({ message: "Joining Date is required!" }),
-
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
-
   subjects: z.string().optional(), // subject ids
 });
 
@@ -177,40 +146,19 @@ export type AdmissionSchema = z.infer<typeof admissionSchema>;
 
 export const studentSchema = z.object({
   id: z.string().min(3, { message: "Student ID is required! at least 3 characters" }),
-  username: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters long!" })
-    .max(20, { message: "Username must be at most 20 characters long!" }),
-
-
-  password: z
-    .string().min(8, { message: "Password must be at least 8 characters long!" })
-    .or(z.literal("")),
-
+  username: z.string().min(3, { message: "Username must be at least 3 characters long!" }).max(20, { message: "Username must be at most 20 characters long!" }),
   name: z.string().min(1, { message: "First name is required!" }),
   surname: z.string().min(1, { message: "Last name is required!" }),
-  email: z
-    .string().min(1, { message: "Email is required!" })
-    .email({ message: "Invalid email address!" }),
+  email: z.string().min(1, { message: "Email is required!" }).email({ message: "Invalid email address!" }),
   phone: z.string().min(1, { message: "Phone number is required!" }),
-
-
   address: z.string().min(1, { message: "Address is required!" }),
-
   img: z.string().optional(),
-
   bloodType: z.string().min(1, { message: "Blood Type is required!" }),
-
   birthday: z.coerce.date({ message: "Birthday is required!" }),
-
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
-
   gradeId: z.coerce.number().min(1, { message: "Grade is required!" }),
-
   classId: z.coerce.number().min(1, { message: "Class is required!" }),
-  parentNId: z.coerce
-    .number()
-    .min(1, { message: "Parent NID must be a positive number" }),
+  parentNId: z.coerce.number().min(1, { message: "Parent NID must be a positive number" }),
   parentName: z.string().min(1, { message: "Parent name is required!" }),
 });
 
@@ -244,7 +192,7 @@ export const lessonSchema = z.object({
 
 export type LessonSchema = z.infer<typeof lessonSchema>;
 
-export const examRoutineSchema =z.object({
+export const examRoutineSchema = z.object({
   id: z.coerce.number().optional(),
   title: z.string().min(1, { message: "Title name is required!" }),
   startTime: z.coerce.date({ message: "Start time is required!" }),
@@ -253,27 +201,6 @@ export const examRoutineSchema =z.object({
 });
 export type ExamRoutineSchema = z.infer<typeof examRoutineSchema>;
 
-export const parentSchema = z.object({
-  id: z.string().optional(),
-
-  username: z.string().min(1, "Username is required"),
-
-  email: z.string().email("Invalid email address"),
-
-  password: z.string().min(6, "Password must be at least 6 characters"),
-
-  name: z.string().min(1, "First name is required"),
-
-  surname: z.string().min(1, "Last name is required"),
-
-  phone: z.string().nullable().optional(), // Allow null
-
-  address: z.string().nullable().optional(), // Allow null
-
-  // Add any other fields as necessary
-});
-
-export type ParentSchema = z.infer<typeof parentSchema>;
 
 export const resultSchema = z.object({
   id: z.number().optional(),
@@ -345,3 +272,30 @@ export const paymentSchema = z.object({
 });
 
 export type PaymentSchema = z.infer<typeof paymentSchema>;
+
+export const onlinePayment = z.object({
+  id: z.string().optional(),
+  transactionId: z.string().min(1, { message: "Transaction ID is required!" }),
+  amount: z.number().min(0, { message: "Amount must be a positive number!" }),
+  status: z.enum(["NotPaid", "Paid", "Due"], { message: "Status is required!" }),
+  studentId: z.string().min(1, { message: "Student ID is required!" }),
+});
+
+export type OnlinePayment = z.infer<typeof onlinePayment>;
+
+
+export const userSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  username: z.string().min(1, { message: "Username is required!" }),
+  email: z.string().min(1, { message: "Email is required!" }).email({ message: "Invalid email address!" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  role: z.enum(["ADMIN", "USER", "TEACHER", "STUDENT"], {
+    message: "Invalid role selected"
+  }),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
+});
+
+export type UserSchema = z.infer<typeof userSchema>;
+

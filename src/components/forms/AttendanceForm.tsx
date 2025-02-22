@@ -6,12 +6,12 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 import {
   attendanceSchema,
   AttendanceSchema,
-} from "@/lib/formValidationSchemas";
+} from "@/schema/formValidationSchemas";
 // import { createAttendance, updateAttendance } from "@/lib/actions";
 import { createAttendance, updateAttendance } from "@/lib/attendenceAction";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import InputField from "../InputField";
+import toast from "react-hot-toast";
 
 const AttendanceForm = ({
   type,
@@ -45,17 +45,17 @@ const AttendanceForm = ({
           : await updateAttendance(data?.id!, formData);
 
       if (response.success) {
-        toast(
+        toast.success(
           `Attendance has been ${type === "create" ? "created" : "updated"}!`
         );
         setOpen(false);
         router.refresh();
       } else {
-        toast(`Failed: ${response.error}`);
+        toast.error(`Failed: ${response.error}`);
       }
     } catch (error) {
       console.error("Submission Error:", error);
-      toast("Error submitting data. Check console.");
+      toast.error("Error submitting data. Check console.");
     }
   });
 
@@ -73,13 +73,6 @@ const AttendanceForm = ({
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
-        {/* <InputField
-          label="Class Name"
-          name="className"
-          register={register}
-          error={errors?.className}
-        /> */}
-
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Class</label>
           <select

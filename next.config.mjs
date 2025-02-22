@@ -14,9 +14,11 @@ const nextConfig = {
     ],
     unoptimized: true, // This will allow any hostname
   },
-  webpack: (config) => {
-    config.devtool = "source-map";
-    return config;
+  webpack: (config, options) => {
+    if (!options.dev) {
+      config.devtool = options.isServer ? false : 'source-map'
+    }
+    return config
   },
 };
 

@@ -10,6 +10,7 @@ declare module "next-auth" {
     user: {
       id: string;
       email: string;
+      username: string;
       role: string; // Ensure role is included in the session
     } & DefaultSession["user"];
   }
@@ -17,6 +18,7 @@ declare module "next-auth" {
   interface JWT {
     id: string;
     email: string;
+    username: string;
     role: string;
   }
 }

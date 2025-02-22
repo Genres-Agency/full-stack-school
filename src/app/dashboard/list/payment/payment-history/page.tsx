@@ -1,13 +1,13 @@
 import { Payment, Prisma } from "@prisma/client";
 import FormModal from "@/components/FormModal";
-import DownloadPaymentPDF from "@/components/forms/PaymentPdfDownload"; // Import the component
+import DownloadPaymentPDF from "@/components/pdf/PaymentPdfDownload"; // Import the component
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Pagination from "@/components/Pagination";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-// import { auth } from "@clerk/nextjs/server";
-import { Button } from "@/components/ui/button";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 export type PaymentHistory = Payment;
 
@@ -16,9 +16,8 @@ const PaymentHistoryPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { userId, sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
-  // const currentUserId = userId;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
   // Define columns for the table
   const columns = [
@@ -44,14 +43,14 @@ const PaymentHistoryPage = async ({
       accessor: "status",
       className: "hidden md:table-cell",
     },
-    // ...(role === "admin"
-    //   ? [
+    ...(role === "admin"
+      ? [
           {
             header: "Actions",
             accessor: "action",
           },
-      //   ]
-      // : []),
+        ]
+      : []),
   ];
 
   // Define renderRow function to render each payment row
@@ -64,12 +63,12 @@ const PaymentHistoryPage = async ({
       <td className={`text-center font-semibold ${item ? (item.status === "Paid" ? "text-green-500 " : "text-orange-500") : "text-red-500"}`}>{item.status}</td>
       <td>
         <div className="flex items-center gap-2 justify-center">
-          {/* {role === "admin" && ( */}
+          {role === "admin" && (
             <>
               <FormModal table="payment" type="update" data={item} />
               <FormModal table="payment" type="delete" id={item.id} />
             </>
-          {/* )} */}
+          )}
           {/* Pass student name and class name */}
          
           

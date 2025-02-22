@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { FinanceSchema } from "./formValidationSchemas";
+import { FinanceSchema } from "../schema/formValidationSchemas";
 import prisma from "./prisma";
 // import { clerkClient } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";

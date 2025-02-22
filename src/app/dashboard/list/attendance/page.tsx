@@ -5,7 +5,8 @@ import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Attendance, Prisma } from "@prisma/client";
-// import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type AttendanceWithClass = Attendance & {
   classes: { id: number; name: string };
@@ -16,8 +17,8 @@ const AttendanceListPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
   const columns = [
     {
@@ -42,14 +43,14 @@ const AttendanceListPage = async ({
       header: "Total Students",
       accessor: "total",
     },
-    // ...(role === "admin" || role === "teacher"
-    //   ? [
+    ...(role === "admin" || role === "teacher"
+      ? [
           {
             header: "Actions",
             accessor: "action",
           },
-      //   ]
-      // : []),
+        ]
+      : []),
   ];
   
 
@@ -69,12 +70,12 @@ const AttendanceListPage = async ({
       <td className="text-center">{item.total}</td>
       <td>
         <div className="flex items-center gap-2 justify-center">
-          {/* {(role === "admin" || role === "teacher") && ( */}
+          {(role === "admin" || role === "teacher") && (
             <>
               <FormContainer table="attendance" type="update" data={item} />
               <FormContainer table="attendance" type="delete" id={item.id} />
             </>
-          {/* )} */}
+          )}
         </div>
       </td>
     </tr>
@@ -120,9 +121,9 @@ const AttendanceListPage = async ({
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
-            {/* {(role === "admin" || role === "teacher") && ( */}
+            {(role === "admin" || role === "teacher") && (
               <FormContainer table="attendance" type="create" />
-            {/* )} */}
+             )} 
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
 import AuthProvider from "@/components/providers/AuthProvider";
+import TopLoader from "@/components/shared/TopLoader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,9 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+      <TopLoader />
         <AuthProvider>
           {children}
-          <ToastContainer position="bottom-right" theme="dark" />
+          <Toaster position="bottom-right" />
         </AuthProvider>
       </body>
     </html>

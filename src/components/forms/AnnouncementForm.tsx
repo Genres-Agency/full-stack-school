@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   announcementSchema,
   AnnouncementSchema,
-} from "@/lib/formValidationSchemas";
+} from "@/schema/formValidationSchemas";
 // import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
 import {
   createAnnouncement,
@@ -15,8 +15,8 @@ import {
 } from "@/lib/announcementAction";
 import { useFormState } from "react-dom";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import ImageUpload from "./ImageUpload";
+import ImageUpload from "../shared/ImageUpload";
+import toast from "react-hot-toast";
 
 export interface FormProps {
   type: "create" | "update";
@@ -87,7 +87,7 @@ const AnnouncementForm: React.FC<FormProps> = ({
   const router = useRouter();
   useEffect(() => {
     if (state.success) {
-      toast(
+      toast.success(
         `Announcement has been ${type === "create" ? "created" : "updated"}!`
       );
       setOpen(false);

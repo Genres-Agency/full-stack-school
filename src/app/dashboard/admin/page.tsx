@@ -1,21 +1,21 @@
 import Announcements from "@/components/Announcements";
-import AttendanceChartContainer from "@/components/AttendanceChartContainer";
-import CountChartContainer from "@/components/CountChartContainer";
-import EmergencyNumbers from "@/components/EmergencyNumbers";
-// import EventCalendarContainer from "@/components/EventCalendarContainer";
-import FinanceChart from "@/components/FinanceChart";
-import FinanceChartContainer from "@/components/FinanceChartContainer";
+import AttendanceChartContainer from "@/components/charts/AttendanceChartContainer";
+import CountChartContainer from "@/components/charts/CountChartContainer";
+import EmergencyNumbers from "@/components/shared/EmergencyNumbers";
+import FinanceChartContainer from "@/components/charts/FinanceChartContainer";
 import UserCard from "@/components/UserCard";
-// import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
+// import { getServerSession } from "next-auth/next";
+// import { authOptions } from "@/auth"
 
 const AdminPage = async ({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { userId, sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  // const session = await getServerSession(authOptions);
+  // const user = session?.user;
+  // console.log(" sadfdsa-----=====",user);
 
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row w-full">

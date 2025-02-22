@@ -1,7 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import Menu from "@/components/Menu";
-import Navbar from "@/components/Navbar";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import Menu from "@/components/dashboard/Menu";
+import Navbar from "@/components/shared/Navbar";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 // import auth  from "@/auth";
 // import { headers } from "next/headers";
 
@@ -22,9 +22,9 @@ export default async function DashboardLayout({
 
   const userRole = session.user.role?.toLowerCase();
 
-  // if (!["admin", "teacher", "student"].includes(userRole)) {
-  //   redirect("/auth/error"); // Redirect to an error page if role is invalid
-  // }
+  if (!["admin", "teacher", "student"].includes(userRole)) {
+    redirect("/auth/error"); // Redirect to an error page if role is invalid
+  }
 
   return (
     <ThemeProvider>

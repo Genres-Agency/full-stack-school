@@ -2,11 +2,11 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { admissionSchema, AdmissionSchema } from "@/lib/formValidationSchemas";
+import { admissionSchema, AdmissionSchema } from "@/schema/formValidationSchemas";
 // import { createAdmission, updateAdmission } from "@/lib/actions";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import { createAdmission, updateAdmission } from "@/lib/admissionAction";
+import toast from "react-hot-toast";
 
 export interface FormProps {
   type: "create" | "update";
@@ -37,11 +37,11 @@ const AdmissionForm: React.FC<FormProps> = ({
         : await updateAdmission(data?.id!, formData);
 
       if (response.success) {
-        toast(`${type === "create" ? "Created" : "Updated"} admission successfully!`);
+        toast.success(`${type === "create" ? "Created" : "Updated"} admission successfully!`);
         setOpen(false);
         router.refresh();
       } else {
-        toast("Failed to submit admission data.");
+        toast.error("Failed to submit admission data.");
       }
     } catch (error) {
       console.error("Error submitting form:", error);

@@ -4,14 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { studentSchema, StudentSchema } from "@/lib/formValidationSchemas";
-import { useFormState } from "react-dom";
-// import { createStudent, updateStudent } from "@/lib/actions";
+import { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
+import { studentSchema, StudentSchema } from "@/schema/formValidationSchemas";
 import { createStudent, updateStudent } from "@/lib/studentAction";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import ImageUpload from "./ImageUpload";
+import ImageUpload from "../shared/ImageUpload";
+import toast from "react-hot-toast";
 
 const StudentForm = ({
   type,
@@ -33,7 +31,7 @@ const StudentForm = ({
     resolver: zodResolver(studentSchema),
   });
 
-  const [state, formAction] = useFormState(
+  const [state, formAction] = useActionState(
     type === "create" ? createStudent : updateStudent,
     {
       success: false,
@@ -85,11 +83,11 @@ const StudentForm = ({
 
   useEffect(() => {
     if (state.success) {
-      toast(`Student has been ${type === "create" ? "created" : "updated"}!`);
+      toast.success(`Student has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     } else if (state.error) {
-      toast(`Student has not been ${type === "create" ? "created" : "updated"}!`);
+      toast.error(`Student has not been ${type === "create" ? "created" : "updated"}!`);
     }
   }, [state, router, type, setOpen]);
 
@@ -101,33 +99,9 @@ const StudentForm = ({
       <h1 className="text-xl font-semibold">
         {type === "create" ? "Create a new student" : "Update the student"}
       </h1>
-      <span className="text-xs text-gray-400 font-medium">Authentication Information</span>
-      <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="Username*"
-          name="username"
-          defaultValue={data?.username}
-          register={register}
-          error={errors?.username}
-        />
-        <InputField
-          label="Email*"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors?.email}
-        />
-        <InputField
-          label="Password*"
-          name="password"
-          type="password"
-          defaultValue={data?.password}
-          register={register}
-          error={errors?.password}
-        />
-      </div>
       <span className="text-xs text-gray-400 font-medium">Personal Information</span>
       <div className="flex justify-between flex-wrap gap-4">
+
         <InputField
           label="First Name*"
           name="name"
@@ -141,6 +115,20 @@ const StudentForm = ({
           defaultValue={data?.surname}
           register={register}
           error={errors.surname}
+        />
+           <InputField
+          label="Username*"
+          name="username"
+          defaultValue={data?.username}
+          register={register}
+          error={errors?.username}
+        />
+        <InputField
+          label="Email*"
+          name="email"
+          defaultValue={data?.email}
+          register={register}
+          error={errors?.email}
         />
         <InputField
           label="Phone*"

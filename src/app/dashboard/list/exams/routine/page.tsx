@@ -6,7 +6,8 @@ import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { ExamRoutine, Prisma } from "@prisma/client";
 import Image from "next/image";
-// import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type ExamRoutineList = ExamRoutine & {
   classes: {
@@ -20,8 +21,8 @@ type ExamRoutineList = ExamRoutine & {
 };
 
 const ExamRoutinePage = async ({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) => {
-  // const { userId, sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
   const columns = [
     {
@@ -50,14 +51,14 @@ const ExamRoutinePage = async ({ searchParams }: { searchParams: Promise<{ [key:
       accessor: "time",
       className: "hidden md:table-cell",
     },
-    // ...(role === "admin"
-    //   ? [
+    ...(role === "admin"
+      ? [
           {
             header: "Actions",
             accessor: "action",
           },
-      //   ]
-      // : []),
+        ]
+      : []),
   ];
 
   const renderRow = (item: ExamRoutineList) => (
@@ -75,14 +76,14 @@ const ExamRoutinePage = async ({ searchParams }: { searchParams: Promise<{ [key:
       <td className="hidden md:table-cell text-center">
       {new Intl.DateTimeFormat("en-US", {  timeStyle: "short" }).format(new Date(item.startTime))}
       </td>
-      {/* {role === "admin" && ( */}
+      {role === "admin" && (
         <td>
           <div className="flex items-center gap-2 justify-center">
             <FormContainer table="examRoutine" type="update" data={item} />
             <FormContainer table="examRoutine" type="delete" id={item.id} />
           </div>
         </td>
-      {/* )} */}
+      )}
     </tr>
   );
 
@@ -135,9 +136,9 @@ const ExamRoutinePage = async ({ searchParams }: { searchParams: Promise<{ [key:
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {/* {role === "admin" &&  */}
+            {role === "admin" && 
             <FormContainer table="examRoutine" type="create" />
-            {/* } */}
+            }
           </div>
         </div>
       </div>

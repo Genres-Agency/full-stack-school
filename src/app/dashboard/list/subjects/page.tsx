@@ -6,7 +6,8 @@ import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
-// import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type SubjectList = Subject & { teachers: Teacher[] };
 
@@ -15,8 +16,8 @@ const SubjectListPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions);
+  const role = session?.user?.role?.toLowerCase();
 
   const columns = [
     {
@@ -27,11 +28,14 @@ const SubjectListPage = async ({
       header: "Subject Name",
       accessor: "name",
     },
- 
-    {
-      header: "Actions",
-      accessor: "action",
-    },
+    ...(role === "admin"
+      ? [
+        {
+          header: "Actions",
+          accessor: "action",
+        }]
+      : []),
+
   ];
 
   const renderRow = (item: SubjectList) => (
@@ -41,15 +45,15 @@ const SubjectListPage = async ({
     >
       <td className="flex items-center gap-4 p-4 justify-center">{item.id}</td>
       <td className=" text-center">{item.name}</td>
-  
+
       <td>
         <div className="flex items-center gap-2 justify-center">
-          {/* {role === "admin" && ( */}
-            <>
-              <FormContainer table="subject" type="update" data={item} />
-              <FormContainer table="subject" type="delete" id={item.id} />
-            </>
-          {/* )} */}
+          {role === "admin" && (
+          <>
+            <FormContainer table="subject" type="update" data={item} />
+            <FormContainer table="subject" type="delete" id={item.id} />
+          </>
+          )}
         </div>
       </td>
     </tr>
@@ -109,7 +113,7 @@ const SubjectListPage = async ({
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
             {/* {role === "admin" && ( */}
-              <FormContainer table="subject" type="create" />
+            <FormContainer table="subject" type="create" />
             {/* )} */}
           </div>
         </div>

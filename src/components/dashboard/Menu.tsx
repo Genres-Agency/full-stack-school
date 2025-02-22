@@ -1,10 +1,7 @@
 "use client";
 
-// Menu.tsx (Server Component)
-// import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
-// import { UserButton } from "@clerk/nextjs";
 import {
   Sidebar,
   SidebarContent,
@@ -28,8 +25,11 @@ import { GiNotebook } from "react-icons/gi";
 import { MdOutlineEventNote } from "react-icons/md";
 import { PiExam } from "react-icons/pi";
 import { RiPagesLine } from "react-icons/ri";
-import { User, LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { User } from "lucide-react";
+import { LogoutButton } from "../auth/LogoutButton";
+import { useSession } from "next-auth/react";
+import { FaAmazonPay } from "react-icons/fa";
+
 // Define the structure of the menu items
 interface MenuItem {
   icon: string;
@@ -146,7 +146,7 @@ const menuItems2: MenuItem2[] = [
         subIcon: <RiPagesLine />,
         subLabel: "Admit",
         subHref: "exams/admit",
-        visible: ["admin", "student"],
+        visible: ["admin"],
       },
       {
         subIcon: <PiExam />,
@@ -166,19 +166,25 @@ const menuItems2: MenuItem2[] = [
   {
     icon: <CiWallet />,
     label: "Payments",
-    visible: ["admin"],
+    visible: ["admin", "student"],
     subLevel: [
       {
-        subIcon: <RiFileList3Line />,
-        subLabel: "Payment History",
-        subHref: "payment/payment-history",
-
-        visible: ["admin"],
+        subIcon: <FaAmazonPay />,
+        subLabel: "Online Payment",
+        subHref: "payment/online-payment",
+        visible: ["admin", "student"],
       },
       {
         subIcon: <MdOutlinePayments />,
         subLabel: "Make Payment",
         subHref: "payment",
+        visible: ["admin"],
+      },
+      {
+        subIcon: <RiFileList3Line />,
+        subLabel: "Payment History",
+        subHref: "payment/payment-history",
+
         visible: ["admin"],
       },
     ],
@@ -197,8 +203,8 @@ const menuItems2: MenuItem2[] = [
       },
       {
         subIcon: <User />,
-        subLabel: "Teachers",
-        subHref: "teachers",
+        subLabel: "Users",
+        subHref: "users",
         visible: ["admin"],
       },
     ],
@@ -206,99 +212,84 @@ const menuItems2: MenuItem2[] = [
 ];
 
 // First, create a client component for the logout button
-const LogoutButton = () => {
-  return (
-    <SidebarMenuItem>
-      <SidebarMenuButton
-        onClick={() => signOut({ callbackUrl: "/auth/login" })}
-        className="flex items-center gap-4 text-gray-500 py-2 pl-2 rounded-md hover:scale-105 transition-all duration-300"
-      >
-        <LogOut size={20} />
-        <span className="hidden lg:block">Logout</span>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
-  );
-};
+
 
 // Then use it in the server component Menu
 const Menu = () => {
-  // const user = await currentUser();
-  // const role = user?.publicMetadata.role as string;
+  const { data: session } = useSession();
+  const role = (session?.user?.role as string)?.toLowerCase();
 
   return (
     <Sidebar className="pt-16 ">
       <SidebarContent className="pb-5">
-        <div className="flex flex-col gap-2 pt-2 pl-2 ">
+        <div className="flex flex-col gap-3 pt-2 pl-2 ">
           <SidebarMenu>
             {menuItems.map((item) => {
-              // if (item.visible.includes(role)) {
-              return (
-                <SidebarMenuItem className=" overflow-hidden" key={item.label}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      href={`/dashboard${item.href}`}
-                      key={item.label}
-                      className="flex pl-2 items-center   gap-4 text-gray-500 py-2  rounded-md  hover:scale-105 transition-all duration-300"
-                    >
-                      <Image src={item.icon} alt="" width={20} height={20} />
-                      <span className="hidden lg:block">{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              );
-              // }
-
-              return null; // Return null if the item is not visible
+              if (item.visible.includes(role)) {
+                return (
+                  <SidebarMenuItem className="overflow-hidden" key={item.label}>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        href={`/dashboard${item.href}`}
+                        className="flex pl-2 items-center gap-4 text-gray-500 py-2 rounded-md hover:scale-105 transition-all duration-300"
+                      >
+                        <Image src={item.icon} alt="" width={20} height={20} />
+                        <span className="hidden lg:block">{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              }
+              return null;
             })}
           </SidebarMenu>
         </div>
-        {menuItems2.map(
-          (menuItem, index) => (
-            // menuItem.visible.includes(role) ? (
-            <SidebarMenu key={index} className=" ">
-              <Collapsible>
-                <CollapsibleTrigger
-                  asChild
-                  className="text-gray-500 py-2 px-4  rounded-md "
-                >
-                  <SidebarMenuButton className="flex items-center justify-between gap-2 rounded-md">
-                    <span className="flex items-center gap-4 text-[16px]">
-                      {menuItem.icon}
-                      {menuItem.label}
-                    </span>
-
-                    <IoIosArrowDown className="arrow-down transition-transform duration-300" />
-                    <IoIosArrowForward className="arrow-forward transition-transform duration-300" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-
-                <CollapsibleContent className="arrow-down ease-in-out transition-transform duration-300">
-                  {
-                    menuItem.subLevel?.map((subItem, subIndex) => (
-                      // subItem.visible.includes(role) && (
-                      <SidebarMenuSub key={subIndex} className="px-0">
-                        <Link
-                          href={` /dashboard/list/${subItem.subHref}`}
-                          className="flex items-center gap-2 py-2 text-gray-500 pl-3  rounded-md hover:scale-105 transition-all duration-300"
-                        >
-                          {subItem.subIcon}
-                          {subItem.subLabel}
-                        </Link>
-                      </SidebarMenuSub>
-                    ))
-                    // )
-                  }
-                </CollapsibleContent>
-              </Collapsible>
-            </SidebarMenu>
-          )
-          //   ) : null
-        )}
+        {menuItems2.map((menuItem, index) => {
+          if (menuItem.visible.includes(role)) {
+            return (
+              <SidebarMenu key={index}>
+                <Collapsible>
+                  <CollapsibleTrigger
+                    asChild
+                    className="text-gray-500 py-2 px-4 rounded-md"
+                  >
+                    <SidebarMenuButton className="flex items-center justify-between gap-3 rounded-md">
+                      <span className="flex items-center gap-4 text-[16px]">
+                        {menuItem.icon}
+                        {menuItem.label}
+                      </span>
+                      <IoIosArrowDown className="arrow-down transition-transform duration-300" />
+                      <IoIosArrowForward className="arrow-forward transition-transform duration-300" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="arrow-down ease-in-out transition-transform duration-300">
+                    {menuItem.subLevel
+                      .filter((subItem) => subItem.visible.includes(role))
+                      .map((subItem, subIndex) => (
+                        <SidebarMenuSub key={subIndex} className="px-0">
+                          <Link
+                            href={`/dashboard/list/${subItem.subHref}`}
+                            className="flex items-center gap-2 py-2 text-gray-500 pl-3 rounded-md hover:scale-105 transition-all duration-300"
+                          >
+                            {subItem.subIcon}
+                            {subItem.subLabel}
+                          </Link>
+                        </SidebarMenuSub>
+                      ))}
+                  </CollapsibleContent>
+                </Collapsible>
+              </SidebarMenu>
+            );
+          }
+          return null;
+        })}
       </SidebarContent>
       <SidebarSeparator />
       <SidebarFooter>
         <SidebarMenu>
+        <SidebarMenuItem>
           <LogoutButton />
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>

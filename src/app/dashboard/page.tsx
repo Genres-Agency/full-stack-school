@@ -1,20 +1,21 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { redirect } from "next/navigation";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
-  const router = useRouter();
+  const user = session?.user;
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/login");
-    }
-  }, [status, router]);
+  if (!user) {
+    return redirect("/");
+  }
 
   if (status === "loading") return <p>Loading...</p>;
 
-  return <h1>Welcome, {session?.user?.email}</h1>;
+  const role = (session?.user?.role as string)?.toLowerCase();
+  
+
+
+  return redirect(`/dashboard/${role}`);
 }

@@ -4,9 +4,9 @@ import FormModal from "./FormModal";
 
 export type FormContainerProps = {
   table:
+    | "users"
     | "teacher"
     | "student"
-    | "parent"
     | "subject"
     | "class"
     | "lesson"
@@ -45,6 +45,12 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         });
         relatedData = { grades: admissionGrades };
         break;
+      case "users":
+        const users = await prisma.user.findMany({
+          select: { id: true, name: true },
+        });
+        relatedData = { users: users };
+        break;
       case "payment":
         const paymentStudents = await prisma.student.findMany({
           select: { id: true, name: true, surname: true },
@@ -67,9 +73,6 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           teachers: assignmentTeachers,
         };
         break;
-
-      
-
       case "attendance":
         const attendanceClasses = await prisma.class.findMany({
           select: { id: true, name: true },

@@ -1,7 +1,8 @@
 import Table from "@/components/Table";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-// import { auth, currentUser } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type ResultList = {
   id: number;
@@ -13,16 +14,14 @@ type ResultList = {
 };
 
 const StudentResultPage = async () => {
-  // const { userId, sessionClaims } = await auth();
-  // const user = await currentUser();
-  // console.log("userId 0000=====",userId, "sessionClaims====", sessionClaims, "user====", user);
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
 
   // Ensure only students can access this page
-  // if (role !== "student") {
-  //   return <p className="text-red-500 text-center">Unauthorized access</p>;
-  // }
+  if (role !== "student") {
+    return <p className="text-red-500 text-center">Unauthorized access</p>;
+  }
 
   // Fetch results for the logged-in student
   const dataRes = await prisma.result.findMany({

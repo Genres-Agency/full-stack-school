@@ -3,13 +3,29 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-    const isOnDashboard = req.nextUrl.pathname.startsWith("/dashboard");
-    const isOnAuthPage = req.nextUrl.pathname.startsWith("/auth/login");
-    const isAuthenticated = !!req.nextauth?.token;
+    const token = req.nextauth.token;
+    const path = req.nextUrl.pathname;
+    const role = token?.role ? String(token.role).toLowerCase() : undefined;
+
+    // Allow access to login page when not authenticated
+    if (path.startsWith('/auth/login') && !token) {
+      return NextResponse.next();
+    }
 
     // Redirect authenticated users away from login
-    if (isOnAuthPage && isAuthenticated) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+    if (path.startsWith('/auth/login') && token) {
+      return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
+    }
+
+    // Handle role-based routes
+    if (path === '/dashboard/admin' && role !== 'admin') {
+      return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
+    }
+    if (path === '/dashboard/teacher' && role !== 'teacher') {
+      return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
+    }
+    if (path === '/dashboard/student' && role !== 'student') {
+      return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
     }
 
     return NextResponse.next();
@@ -17,7 +33,7 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ req, token }) => {
-        // Allow public access to auth pages
+        // Always allow access to auth pages
         if (req.nextUrl.pathname.startsWith("/auth/")) {
           return true;
         }
@@ -25,9 +41,17 @@ export default withAuth(
         return !!token;
       },
     },
+    pages: {
+      signIn: '/auth/login',
+    },
   }
 );
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth/login"],
+  matcher: [
+    "/dashboard/admin",
+    "/dashboard/teacher",
+    "/dashboard/student",
+    "/auth/login"
+  ]
 };

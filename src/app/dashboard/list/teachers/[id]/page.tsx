@@ -1,18 +1,18 @@
 import Announcements from "@/components/Announcements";
 import BigCalendarContainer from "@/components/BigCalendarContainer";
-import BigCalendar from "@/components/BigCalender";
-import { MdBloodtype, MdOutlineBloodtype } from "react-icons/md";
+import { MdBloodtype } from "react-icons/md";
 import { HiCalendarDateRange } from "react-icons/hi2";
 import FormContainer from "@/components/FormContainer";
 import Performance from "@/components/Performance";
 import prisma from "@/lib/prisma";
-// import { auth } from "@clerk/nextjs/server";
 import { Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { IoMail } from "react-icons/io5";
 import { FaPhoneAlt } from "react-icons/fa";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 const SingleTeacherPage = async ({
   params,
@@ -20,8 +20,8 @@ const SingleTeacherPage = async ({
   params: Promise<{ id: string }>;
 }) => {
 
-  // const { sessionClaims } = auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
   const teacher:
     | (Teacher & {
@@ -68,13 +68,13 @@ const SingleTeacherPage = async ({
                     <h1 className="text-xl font-semibold">
                       {teacher.name + " " + teacher.surname}
                     </h1>
-                    {/* {role === "admin" && ( */}
+                    {role === "admin" && (
                       <FormContainer
                         table="teacher"
                         type="update"
                         data={teacher}
                       />
-                    {/* )} */}
+                    )}
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-300 mt-2">
                     Lorem ipsum, dolor sit amet consectetur adipisicing elit.
@@ -205,7 +205,7 @@ const SingleTeacherPage = async ({
           </div>
         </div>
         <Performance />
-        {/* <Announcements /> */}
+        <Announcements />
       </div>
     </div>
   );

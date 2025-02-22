@@ -6,7 +6,8 @@ import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Assignment, Class, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
-// import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type AssignmentList = Assignment & {
   subject: Subject[];
@@ -19,8 +20,8 @@ const AssignmentListPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  // const { userId, sessionClaims } = await auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
   const columns = [
     {
@@ -45,14 +46,14 @@ const AssignmentListPage = async ({
     //   accessor: "teacher.name",
     //   className: "hidden md:table-cell",
     // },
-    // ...(role === "admin" || role === "teacher"
-    //   ? [
-    //       {
-    //         header: "Actions",
-    //         accessor: "action",
-    //       },
-    //     ]
-    //   : []),
+    ...(role === "admin" || role === "teacher"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+          },
+        ]
+      : []),
   ];
 
   const renderRow = (item: AssignmentList) => (
@@ -71,12 +72,12 @@ const AssignmentListPage = async ({
       </td> */}
       <td>
         <div className="flex items-center gap-2 justify-center">
-          {/* {(role === "admin" || role === "teacher") && ( */}
+          {(role === "admin" || role === "teacher") && (
             <>
               <FormModal table="assignment" type="update" data={item} />
               <FormModal table="assignment" type="delete" id={item.id} />
             </>
-          {/* )} */}
+        )}
         </div>
       </td>
     </tr>
@@ -152,9 +153,9 @@ const AssignmentListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {/* {(role === "admin" || role === "teacher") && ( */}
+            {(role === "admin" || role === "teacher") && (
               <FormModal table="assignment" type="create" />
-            {/* )} */}
+            )} 
           </div>
         </div>
       </div>

@@ -132,6 +132,7 @@ model Student {
   birthday   DateTime
   payments   Payment[]
   admission  Admission[]
+  onlinePayment OnlinePayment[]
 }
 
 model Teacher {
@@ -290,6 +291,17 @@ model Payment {
   studentId String
   student   Student       @relation(fields: [studentId], references: [username], onDelete: Cascade)
 }
+
+model OnlinePayment {
+  id           String  @id @default(cuid())
+  transactionId String @unique
+  amount       Float
+  status       PaymentStatus
+  createdAt    DateTime @default(now())
+  studentId String
+  student   Student       @relation(fields: [studentId], references: [username], onDelete: Cascade)
+}
+
 
 enum PaymentStatus {
   NotPaid

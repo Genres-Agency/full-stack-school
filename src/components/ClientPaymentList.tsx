@@ -29,7 +29,7 @@ type Payment = {
 const ClientPaymentList = ({ students, total, role, page, perPage, payments}: { students: StudentWithPayments[]; total: number; role?: string; page: number; perPage: number, payments: Payment[] }) => {
   const [openForm, setOpenForm] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
-  console.log("fadfsadfas====",selectedStudentId);
+  // console.log("fadfsadfas====",selectedStudentId);
   
 
   const handleOpenForm = (studentId: string) => {

@@ -6,8 +6,8 @@ import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Prisma } from "@prisma/client";
 import Image from "next/image";
-
-// import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 
 type ResultList = {
   id: number;
@@ -26,9 +26,8 @@ const ResultListPage = async ({
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
 
-// const { userId, sessionClaims } = await auth();
-// const role = (sessionClaims?.metadata as { role?: string })?.role;
-// const currentUserId = userId;
+  const session = await getServerSession(authOptions); 
+  const role = session?.user?.role?.toLowerCase();
 
 
 const columns = [
@@ -53,14 +52,14 @@ const columns = [
     accessor: "marks",
   },
 
-  // ...(role === "admin" || role === "teacher"
-  //   ? [
+  ...(role === "admin" || role === "teacher"
+    ? [
         {
           header: "Actions",
           accessor: "action",
         },
-    //   ]
-    // : []),
+      ]
+    : []),
 ];
 
 const renderRow = (item: ResultList) => (
@@ -78,12 +77,12 @@ const renderRow = (item: ResultList) => (
     <td>
       <div className="flex items-center gap-2 justify-center">
 
-        {/* {(role === "admin" || role === "teacher") && ( */}
+        {(role === "admin" || role === "teacher") && (
           <>
             <FormContainer table="result" type="update" data={item} />
             <FormContainer table="result" type="delete" id={item.id} />
           </>
-        {/* )} */}
+        )}
       </div>
     </td>
   </tr>
@@ -161,9 +160,9 @@ const renderRow = (item: ResultList) => (
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {/* {(role === "admin" || role === "teacher") && ( */}
+            {(role === "admin" || role === "teacher") && (
               <FormContainer table="result" type="create" />
-            {/* )} */}
+            )}
           </div>
         </div>
       </div>

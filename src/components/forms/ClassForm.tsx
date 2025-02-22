@@ -6,7 +6,7 @@ import InputField from "../InputField";
 import {
   classSchema,
   ClassSchema,
-} from "@/lib/formValidationSchemas";
+} from "@/schema/formValidationSchemas";
 // import {
 //   createClass,
 //   createSubject,
@@ -16,8 +16,8 @@ import {
 import { createClass, updateClass } from "@/lib/classAction";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const ClassForm = ({
   type,
@@ -57,7 +57,7 @@ const ClassForm = ({
 
   useEffect(() => {
     if (state.success) {
-      toast(`Class has been ${type === "create" ? "created" : "updated"}!`);
+      toast.success(`Class has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }

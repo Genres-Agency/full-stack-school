@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { FormContainerProps } from "./FormContainer";
 import { deleteAnnouncement } from "@/lib/announcementAction";
 import { deleteSubject } from "@/lib/subjectAction";
@@ -12,7 +11,6 @@ import { deleteClass } from "@/lib/classAction";
 import { deleteTeacher } from "@/lib/teacherAction";
 import { deleteStudent } from "@/lib/studentAction";
 import { deleteAttendance } from "@/lib/attendenceAction";
-import { deleteParent } from "@/lib/actions";
 import { deleteAdmission } from "@/lib/admissionAction";
 import { deleteResult } from "@/lib/resultAction";
 import { deleteAssignment } from "@/lib/assignmentAction";
@@ -20,13 +18,15 @@ import { deleteFinance } from "@/lib/financeAction";
 import { deletePayment } from "@/lib/paymentAction";
 import ExamRoutineForm from "./forms/ExamRoutineForm";
 import { deleteExamRoutine } from "@/lib/examRoutineActions";
+import toast from "react-hot-toast";
+import UserForm from "./forms/UserForm";
+import { deleteUser } from "@/lib/userAction";
 
 const deleteActionMap = {
   subject: deleteSubject,
   class: deleteClass,
   teacher: deleteTeacher,
   student: deleteStudent,
-  parent: deleteParent,
   lesson: deleteSubject,
   admission: deleteAdmission,
   assignment: deleteAssignment,
@@ -36,6 +36,7 @@ const deleteActionMap = {
   announcement: deleteAnnouncement,
   finance: deleteFinance,
   payment: deletePayment,
+  users: deleteUser,
   examRoutine: deleteExamRoutine,
 };
 
@@ -66,9 +67,6 @@ const ClassForm = dynamic(() => import("./forms/ClassForm"), {
 const LessonForm = dynamic(() => import("./forms/LessonForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const ParentForm = dynamic(() => import("./forms/ParentForm"), {
-  loading: () => <h1>Loading...</h1>,
-});
 const AttendanceForm = dynamic(() => import("./forms/AttendanceForm"), {
   loading: () => <h1>Loading...</h1>,
 });
@@ -94,6 +92,15 @@ const forms: {
     relatedData?: any
   ) => JSX.Element;
 } = {
+  users: (setOpen, type, data, relatedData) => {
+    return (
+      <UserForm
+        type={type}
+        data={data}
+        setOpen={setOpen}
+      />
+    );
+  },
   subject: (setOpen, type, data, relatedData) => (
     <SubjectForm
       type={type}
@@ -136,7 +143,6 @@ const forms: {
 
   teacher: (setOpen, type, data, relatedData) => {
     // No need for Cloudinary configuration
-
     return (
       <TeacherForm
         type={type}
@@ -208,9 +214,7 @@ const forms: {
       />
     );
   },
-  parent: (setOpen, type, data, relatedData) => (
-    <ParentForm type={type} data={data} setOpen={setOpen} />
-  ),
+
   result: (setOpen, type, data, relatedData) => (
     // <ResultForm type={type} data={data} setOpen={setOpen} />
     <ResultForm type={type} data={data} setOpen={setOpen} />
@@ -245,7 +249,7 @@ const FormModal = ({
 
     useEffect(() => {
       if (state.success) {
-        toast(`${table} has been deleted!`);
+        toast.success(`${table} has been deleted!`);
         setOpen(false);
         router.refresh();
       }

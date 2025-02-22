@@ -4,6 +4,9 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Pagination from "@/components/Pagination";
 import AdmitCardButton from "@/components/AdmitCardButton";
+// import { authOptions } from "@/auth";
+// import { getServerSession } from "next-auth";
+
 
 
 
@@ -12,8 +15,8 @@ const AdmitPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-//   const { userId, sessionClaims } = await auth();
-//   const role = (sessionClaims?.metadata as { role?: string })?.role;
+// const session = await getServerSession(authOptions); 
+//   const role = session?.user?.role?.toLowerCase();
 
   const columns = [
     { header: "Student Name", accessor: "studentName" },

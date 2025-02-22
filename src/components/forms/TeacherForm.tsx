@@ -4,14 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { teacherSchema, TeacherSchema } from "@/lib/formValidationSchemas";
-import { useFormState } from "react-dom";
-// import { createTeacher, updateTeacher } from "@/lib/actions";
+import { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
+import { teacherSchema, TeacherSchema } from "@/schema/formValidationSchemas";
 import { createTeacher, updateTeacher } from "@/lib/teacherAction";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import ImageUpload from "./ImageUpload";
+import ImageUpload from "../shared/ImageUpload";
+import toast from "react-hot-toast";
 
 const bloodTypes = [
   "A(+ve)",
@@ -46,7 +44,7 @@ const TeacherForm = ({
   const [imageUrl, setImageUrl] = useState(data?.image || "");
   const [loading, setLoading] = useState(false);
 
-  const [state, formAction] = useFormState(
+  const [state, formAction] = useActionState(
     type === "create" ? createTeacher : updateTeacher,
     {
       success: false,
@@ -55,7 +53,7 @@ const TeacherForm = ({
   );
 
   const uploadImage = async () => {
-    if (!selectedFile) return imageUrl; // If no new file, use existing URL
+    if (!selectedFile) return imageUrl;
 
     const formData = new FormData();
     formData.append("image", selectedFile);
@@ -73,30 +71,35 @@ const TeacherForm = ({
 
       const data = await response.json();
       if (data.success) {
-        return data.data.url; // Return the uploaded image URL
+        return data.data.url;
       } else {
         throw new Error("Image upload failed");
       }
     } catch (error) {
       console.error(error);
-      return ""; // Return empty string if upload fails
+      toast.error("Failed to upload image");
+      return "";
     } finally {
       setLoading(false);
     }
   };
 
   const onSubmit = handleSubmit(async (formData) => {
-    const uploadedImageUrl = await uploadImage(); // Upload image before form submission
-    const payload = { ...formData, img: uploadedImageUrl }; // Include image URL in payload
-
-    formAction(payload);
+    try {
+      const uploadedImageUrl = await uploadImage();
+      const payload = { ...formData, img: uploadedImageUrl };
+      formAction(payload);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error("Failed to submit form");
+    }
   });
 
   const router = useRouter();
 
   useEffect(() => {
     if (state.success) {
-      toast(`Teacher has been ${type === "create" ? "created" : "updated"}!`);
+      toast.success(`Teacher has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }
@@ -109,66 +112,58 @@ const TeacherForm = ({
       <h1 className="text-xl font-semibold">
         {type === "create" ? "Create a new teacher" : "Update the teacher"}
       </h1>
+      
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="Username"
-          name="username"
-          defaultValue={data?.username}
-          register={register}
-          error={errors?.username}
-        />
-        <InputField
-          label="Email"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors?.email}
-        />
-        <InputField
-          label="Password"
-          name="password"
-          type="password"
-          defaultValue={data?.password}
-          register={register}
-          error={errors?.password}
-        />
-      </div>
-      <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="First Name"
+          label="First Name*"
           name="name"
           defaultValue={data?.name}
           register={register}
           error={errors.name}
         />
         <InputField
-          label="Last Name"
+          label="Last Name*"
           name="surname"
           defaultValue={data?.surname}
           register={register}
           error={errors.surname}
         />
         <InputField
-          label="Phone"
+          label="Username*"
+          name="username"
+          defaultValue={data?.username}
+          register={register}
+          error={errors?.username}
+        />
+        <InputField
+          label="Email*"
+          name="email"
+          defaultValue={data?.email}
+          register={register}
+          error={errors?.email}
+        />
+        <InputField
+          label="Phone*"
           name="phone"
           defaultValue={data?.phone}
           register={register}
           error={errors.phone}
         />
         <InputField
-          label="Address"
+          label="Address*"
           name="address"
           defaultValue={data?.address}
           register={register}
           error={errors.address}
         />
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Blood Group</label>
+          <label className="text-xs text-gray-500">Blood Group*</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("bloodType")}
             defaultValue={data?.bloodType}
           >
+            <option value="">Select Blood Group</option>
             {bloodTypes.map((bloodType) => (
               <option value={bloodType} key={bloodType}>
                 {bloodType}
@@ -181,9 +176,8 @@ const TeacherForm = ({
             </p>
           )}
         </div>
-        {/* Joining Date */}
         <InputField
-          label="Joining Date"
+          label="Joining Date*"
           name="joiningDate"
           defaultValue={data?.joiningDate?.toISOString().split("T")[0]}
           register={register}
@@ -201,12 +195,13 @@ const TeacherForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Sex</label>
+          <label className="text-xs text-gray-500">Sex*</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("sex")}
             defaultValue={data?.sex}
           >
+            <option value="">Select Gender</option>
             <option value="MALE">Male</option>
             <option value="FEMALE">Female</option>
           </select>
@@ -221,11 +216,16 @@ const TeacherForm = ({
           <label className="text-xs text-gray-500">Subjects</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("subjects")}
+            {...register("subjects", { required: "Please select at least one subject" })}
             defaultValue={data?.subjects}
+            multiple
           >
             {subjects?.map((subject: { id: number; name: string }) => (
-              <option value={subject.id} key={subject.id} selected={data && subject.id === data.subjects}>
+              <option 
+                value={subject.id} 
+                key={subject.id}
+                selected={data?.subjects?.includes(subject.id)}
+              >
                 {subject.name}
               </option>
             ))}
@@ -236,7 +236,7 @@ const TeacherForm = ({
             </p>
           )}
         </div>
-        {/* Add Image Upload Field */}
+
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-gray-700 font-medium">Upload Image</label>
           <ImageUpload
@@ -248,7 +248,11 @@ const TeacherForm = ({
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-     <button type="submit" disabled={loading} className={`bg-blue-400 text-white p-2 rounded-md ${loading ? "opacity-50" : ""}`}>
+      <button 
+        type="submit" 
+        disabled={loading} 
+        className={`bg-blue-400 text-white p-2 rounded-md ${loading ? "opacity-50" : ""}`}
+      >
         {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
       </button>
     </form>
