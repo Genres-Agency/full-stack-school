@@ -10,12 +10,14 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 
 type FinanceData = {
   name: string;
   income: number;
   expense: number;
+  net?: number;
 }
 
 interface FinanceChartProps {
@@ -24,31 +26,39 @@ interface FinanceChartProps {
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
+    const income = payload[0]?.value || 0;
+    const expense = payload[1]?.value || 0;
+    const net = income - expense;
+    const profitMargin = income > 0 ? ((net / income) * 100).toFixed(1) : 0;
+
     return (
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-        <p className="font-semibold">{label}</p>
+        <p className="font-semibold mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <p
             key={index}
-            style={{ color: entry.color }}
-            className="flex items-center justify-between gap-2"
+            className="flex items-center justify-between gap-4 text-sm"
           >
-            <span>{entry.name}:</span>
+            <span style={{ color: entry.color }}>{entry.name}:</span>
             <span className="font-semibold">
               ৳{entry.value.toLocaleString()}
             </span>
           </p>
         ))}
-        <p className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-          <span>Net: </span>
-          <span className={`font-semibold ${
-            payload[0].value - payload[1].value >= 0 
-            ? 'text-green-500' 
-            : 'text-red-500'
-          }`}>
-            ৳{(payload[0].value - payload[1].value).toLocaleString()}
-          </span>
-        </p>
+        <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+          <p className="flex items-center justify-between gap-4 text-sm">
+            <span>Net:</span>
+            <span className={`font-semibold ${net >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              {net >= 0 ? '৳' : '-৳'}{Math.abs(net).toLocaleString()}
+            </span>
+          </p>
+          <p className="flex items-center justify-between gap-4 text-xs text-gray-500 mt-1">
+            <span>Profit Margin:</span>
+            <span className={net >= 0 ? 'text-green-500' : 'text-red-500'}>
+              {profitMargin}%
+            </span>
+          </p>
+        </div>
       </div>
     );
   }
@@ -57,72 +67,54 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const FinanceChart = ({ data }: FinanceChartProps) => {
   return (
-    <div className="bg-white dark:bg-[#18181b] rounded-xl w-full h-full p-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-lg font-semibold">Finance</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Monthly Income vs Expense
-          </p>
-        </div>
-        <Image src="/moreDark.png" alt="" width={20} height={20} />
-      </div>
-      <ResponsiveContainer width="100%" height="90%">
-        <BarChart
-          width={500}
-          height={300}
-          data={data}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-          <XAxis
-            dataKey="name"
-            axisLine={false}
-            tick={{ fill: "#d1d5db" }}
-            tickLine={false}
-            tickMargin={10}
-          />
-          <YAxis
-            axisLine={false}
-            tick={{ fill: "#d1d5db" }}
-            tickLine={false}
-            tickMargin={20}
-            tickFormatter={(value) => `৳${value.toLocaleString()}`}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend
-            align="center"
-            verticalAlign="top"
-            wrapperStyle={{ paddingTop: "10px", paddingBottom: "20px" }}
-          />
-          <Bar 
-            dataKey="income" 
-            fill="#27B6E9"
-            barSize={16} 
-            radius={[10, 10, 0, 0]}
-            fillOpacity={0.9}
-            strokeWidth={1}
-            stroke="#1a90bc"
-            name="Income"
-          />
-          <Bar 
-            dataKey="expense" 
-            fill="#A09EF5"
-            barSize={16} 
-            radius={[10, 10, 0, 0]}
-            fillOpacity={0.9} 
-            strokeWidth={1}
-            stroke="#8280c4"
-            name="Expense"
-          />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width="100%" height={370}>
+      <BarChart
+        data={data}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" stroke="#ddd" vertical={false} />
+        <XAxis
+          dataKey="name"
+          axisLine={false}
+          tick={{ fill: "#d1d5db" }}
+          tickLine={false}
+          tickMargin={10}
+        />
+        <YAxis
+          axisLine={false}
+          tick={{ fill: "#d1d5db" }}
+          tickLine={false}
+          tickMargin={20}
+          tickFormatter={(value) => `৳${value.toLocaleString()}`}
+        />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend
+          align="center"
+          verticalAlign="top"
+          wrapperStyle={{ paddingTop: "10px", paddingBottom: "20px" }}
+        />
+        <ReferenceLine y={0} stroke="#666" strokeDasharray="3 3" />
+        <Bar
+          dataKey="income"
+          fill="#3b86f6"
+          barSize={16}
+          fillOpacity={0.9}
+          name="Income"
+        />
+        <Bar
+          dataKey="expense"
+          fill="red"
+          barSize={16}
+          fillOpacity={0.9}
+          name="Expense"
+        />
+      </BarChart>
+    </ResponsiveContainer>
   );
 };
 
