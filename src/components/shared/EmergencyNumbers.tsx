@@ -20,15 +20,15 @@ const emergencyNumbers = [
 
 const EmergencyNumbers: React.FC = () => {
   return (
-    <div className="max-w-md mx-auto bg-white dark:bg-[#18181b] shadow-md rounded-lg overflow-hidden mt-10">
+    <div className="w-full mx-auto bg-white dark:bg-[#18181b] shadow-md rounded-lg overflow-hidden mt-10">
       <div className=" text-[#ff0000] text-center py-4 border-b">
-        <h1 className="text-xl font-semibold flex gap-2 items-center justify-center"><MdContactEmergency /> Emergency Numbers </h1>
+        <h1 className="text-xl font-semibold flex gap-2 items-center justify-center"><MdContactEmergency /> Emergency Contacts </h1>
       </div>
       <ul className="">
-        {emergencyNumbers.map((item, index) => (
+        {emergencyNumbers.map((item: { service: string; number: string }, index) => (
           <li key={index} className="px-4 py-2 flex justify-between items-center even:bg-[#edf9fd] dark:even:bg-gray-600">
             <span className="text-gray-700 dark:text-gray-400">{item.service}</span>
-            <span className="text-[#00ff00] font-semibold">{item.number}</span>
+            <span className="text-[#216a21] font-semibold">{item.number}</span>
           </li>
         ))}
       </ul>

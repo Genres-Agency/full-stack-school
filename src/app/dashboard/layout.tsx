@@ -1,6 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import Menu from "@/components/dashboard/Menu";
-import Navbar from "@/components/shared/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 // import auth  from "@/auth";
 // import { headers } from "next/headers";
@@ -8,6 +7,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 export default async function DashboardLayout({
   children,
@@ -29,14 +29,11 @@ export default async function DashboardLayout({
   return (
     <ThemeProvider>
       <SidebarProvider>
-        <div className="fixed top-0 bg-white dark:bg-gray-900 z-50 w-full">
-          <Navbar />
-        </div>
         <Menu />
-        <div className="w-full bg-[#F7F8FA] dark:bg-black flex h-full pt-20">
-          <SidebarTrigger />
-          {children}
-        </div>
+        <SidebarInset className="flex flex-col h-screen overflow-hidden">
+          <DashboardHeader />
+          <div className="flex-1 overflow-y-auto mt-5">{children}</div>
+        </SidebarInset>
       </SidebarProvider>
     </ThemeProvider>
   );
