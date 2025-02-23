@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   announcementSchema,
   AnnouncementSchema,
@@ -82,7 +82,10 @@ const AnnouncementForm: React.FC<FormProps> = ({
     const uploadedImageUrl = await uploadImage(); // Upload image before form submission
     const payload = { ...formData, img: uploadedImageUrl }; // Include image URL in payload
 
-    formAction(payload);
+    // Wrap formAction in startTransition to handle async state updates properly
+    React.startTransition(() => {
+      formAction(payload);
+    });
   });
   const router = useRouter();
   useEffect(() => {

@@ -49,8 +49,9 @@ const ResultForm = ({
   };
 
   const onSubmit = handleSubmit(async (formData: ResultSchema) => {
+    console.log("onSubmit triggered!");
     try {
-      // console.log("Form Data:", formData);
+      console.log("Form Data:", formData);
 
       if (!formData.studentId) {
         toast.error("Student ID is missing!");

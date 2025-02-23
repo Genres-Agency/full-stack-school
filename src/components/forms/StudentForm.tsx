@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
 import { studentSchema, StudentSchema } from "@/schema/formValidationSchemas";
 import { createStudent, updateStudent } from "@/lib/studentAction";
 import { useRouter } from "next/navigation";
@@ -76,7 +76,9 @@ const StudentForm = ({
     const uploadedImageUrl = await uploadImage(); // Upload image before form submission
     const payload = { ...formData, img: uploadedImageUrl }; // Include image URL in payload
 
-    formAction(payload);
+    React.startTransition(() => {
+      formAction(payload);
+    });
   });
 
   const router = useRouter();

@@ -15,7 +15,7 @@ import {
 // } from "@/lib/actions";
 import { createClass, updateClass } from "@/lib/classAction";
 import { useFormState } from "react-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -50,7 +50,9 @@ const ClassForm = ({
 
   const onSubmit = handleSubmit((data) => {
     // console.log(data);
-    formAction(data);
+    React.startTransition(() => {
+       formAction(data); 
+     });
   });
 
   const router = useRouter();

@@ -7,7 +7,7 @@ import { subjectSchema, SubjectSchema } from "@/schema/formValidationSchemas";
 // import { createSubject, updateSubject } from "@/lib/actions";
 import { createSubject, updateSubject } from "@/lib/subjectAction";
 import { useFormState } from "react-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -43,7 +43,10 @@ const SubjectForm = ({
 
   const onSubmit = handleSubmit((data) => {
     // console.log(data);
-    formAction(data);
+    React.startTransition(() => {
+      formAction(data);
+    });
+
   });
 
   const router = useRouter();

@@ -3,8 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import Image from "next/image";
-import { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
 import { teacherSchema, TeacherSchema } from "@/schema/formValidationSchemas";
 import { createTeacher, updateTeacher } from "@/lib/teacherAction";
 import { useRouter } from "next/navigation";
@@ -88,7 +87,9 @@ const TeacherForm = ({
     try {
       const uploadedImageUrl = await uploadImage();
       const payload = { ...formData, img: uploadedImageUrl };
-      formAction(payload);
+      React.startTransition(() => {
+        formAction(payload);
+      });
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("Failed to submit form");
@@ -213,13 +214,13 @@ const TeacherForm = ({
         </div>
 
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Subjects</label>
+          <label className="text-xs text-gray-500">Subjects*</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("subjects", { required: "Please select at least one subject" })}
             defaultValue={data?.subjects}
-            multiple
           >
+            <option value="">Select Subjects</option>
             {subjects?.map((subject: { id: number; name: string }) => (
               <option 
                 value={subject.id} 
@@ -236,7 +237,6 @@ const TeacherForm = ({
             </p>
           )}
         </div>
-
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-gray-700 font-medium">Upload Image</label>
           <ImageUpload
