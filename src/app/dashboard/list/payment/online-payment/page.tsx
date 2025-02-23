@@ -52,11 +52,11 @@ export default function PaymentForm() {
           <button
             key={method.id}
             className={`p-2 border rounded-md ${
-              selectedMethod === method.id ? "border-blue-500" : "border-gray-300"
+              selectedMethod === method.id ? "border-sky-500 bg-slate-300" : "border-gray-300 "
             }`}
             onClick={() => setSelectedMethod(method.id)}
           >
-            <Image src={method.logo} alt={method.name} className="h-10" />
+            <Image width={60} height={40} src={method.logo} alt={method.name} className="h-10" />
           </button>
         ))}
       </div>
@@ -105,7 +105,7 @@ export default function PaymentForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="w-full p-2 bg-sky-500 text-white rounded-md hover:bg-sky-600"
         >
           {loading ? "Processing..." : `Pay with ${selectedMethod}`}
         </button>

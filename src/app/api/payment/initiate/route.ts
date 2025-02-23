@@ -4,7 +4,7 @@ import axios from "axios";
 const SSL_API_URL = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"; // Use live URL in production
 const STORE_ID = process.env.SSLCOMMERZ_STORE_ID!;
 const STORE_PASSWD = process.env.SSLCOMMERZ_STORE_PASSWORD!;
-const SITE_URL = process.env.NEXT_PUBLIC_URL!; // e.g., http://localhost:3000 or live site URL
+const SITE_URL = process.env.NEXTAUTH_URL!; // e.g., http://localhost:3000 or live site URL
 
 export async function POST(req: Request) {
   try {

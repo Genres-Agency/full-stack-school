@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
-import { UserNav } from "./user-nav";
+import { UserNav } from "./UserNav";
 
 const Navbar = async () => {
 

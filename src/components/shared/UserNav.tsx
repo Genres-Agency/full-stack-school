@@ -20,7 +20,7 @@ export function UserNav() {
   const role = (session?.user?.role as string)?.toLowerCase();
   const menuItems = [
     { label: "Dashboard", href: `/dashboard/${role}`, shortcut: "⇧⌘D" },
-    { label: "Profile", href: `/dashboard/${role}`, shortcut: "⇧⌘P" },
+    { label: "Profile", href: `/dashboard`, shortcut: "⇧⌘P" },
   ];
   if (session) {
     return (
