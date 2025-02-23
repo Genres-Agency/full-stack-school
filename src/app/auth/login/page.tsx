@@ -43,7 +43,7 @@ export default function LoginPage() {
     <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
         <div className="flex justify-center">
-          <Image width={40} height={40} src="/logo.png" alt="logo" />
+          <Image width={40} height={40} src="/logo.png" alt="logo" /> <span className="text-2xl font-bold">Gen School</span>
         </div>
         <h2 className="text-2xl font-bold text-center mt-4 text-gray-900 dark:text-white">
           Sign in to your account

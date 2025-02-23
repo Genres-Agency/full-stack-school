@@ -8,7 +8,13 @@ import { useSession } from "next-auth/react";
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const menuItems = [ "Admission", "Academics", "Administration", "Dashboard", "Contact"];
+    const menuItems = [
+        { label: "Admission", href: "/" },
+        { label: "Academics", href: "/" },
+        { label: "Administration", href: "/" },
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Contact", href: "/" }
+    ];
     const { data: session } = useSession();
     const user = session?.user;
     const toggleMenu = () => {
@@ -16,7 +22,7 @@ const Header = () => {
     };
 
     return (
-        <header className="bg-blue-900 text-white py-4 shadow-md relative">
+        <header className="bg-gray-900 text-white py-4 shadow-md relative">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
@@ -51,14 +57,14 @@ const Header = () => {
 
                     {/* Desktop navigation */}
                     <nav className="hidden md:block">
-                        <ul className="flex pt-[2px] space-x-6">
+                        <ul className="flex pt-1 space-x-6">
                             {menuItems.map((item) => (
-                                <li key={item}>
+                                <li key={item.label}>
                                     <Link
-                                        href={`/${item.toLowerCase()}`}
+                                        href={item.href}
                                         className="hover:text-gray-300 transition duration-200"
                                     >
-                                        {item}
+                                        {item.label}
                                     </Link>
                                 </li>
                             ))}
@@ -89,13 +95,13 @@ const Header = () => {
                 >
                     <ul className="px-4 py-2">
                         {menuItems.map((item) => (
-                            <li key={item} className="py-2">
+                            <li key={item.label} className="py-2">
                                 <Link
-                                    href={`/${item.toLowerCase()}`}
+                                    href={item.href}
                                     className="block hover:text-gray-300 transition duration-200"
                                     onClick={() => setIsMenuOpen(false)}
                                 >
-                                    {item}
+                                    {item.label}
                                 </Link>
                             </li>
                         ))}

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 const paymentMethods = [
@@ -55,7 +56,7 @@ export default function PaymentForm() {
             }`}
             onClick={() => setSelectedMethod(method.id)}
           >
-            <img src={method.logo} alt={method.name} className="h-10" />
+            <Image src={method.logo} alt={method.name} className="h-10" />
           </button>
         ))}
       </div>

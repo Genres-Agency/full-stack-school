@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
+import { UserNav } from "./user-nav";
 
 const Navbar = async () => {
 
@@ -50,7 +51,7 @@ const Navbar = async () => {
             1
           </div>
         </div>
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <span className="text-xs leading-3 font-medium">
             {user?.name}
           </span>
@@ -58,7 +59,9 @@ const Navbar = async () => {
             {user?.role as string}
           </span>
         </div>
-        <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full"/>
+        <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full"/> */}
+
+        <UserNav />
         {/* <UserButton /> */}
       </div>
     </div>

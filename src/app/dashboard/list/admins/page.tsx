@@ -2,23 +2,19 @@ import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-
 import prisma from "@/lib/prisma";
-import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Class, Prisma, Student } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import Image from "next/image";
-import Link from "next/link";
+import { ITEM_PER_PAGE } from "@/lib/settings";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
 
-type StudentList = Student & { class: Class };
-
-const StudentListPage = async ({
+const AdminsPage = async ({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  const session = await getServerSession(authOptions); 
+  const session = await getServerSession(authOptions);
   const role = session?.user?.role?.toLowerCase();
 
   const columns = [
@@ -27,21 +23,11 @@ const StudentListPage = async ({
       accessor: "info",
     },
     {
-      header: "Student ID",
-      accessor: "studentId",
+      header: "Username",
+      accessor: "username",
       className: "hidden md:table-cell",
     },
-    {
-      header: "Phone",
-      accessor: "phone",
-      className: "table-cell",
-    },
-    {
-      header: "Address",
-      accessor: "address",
-      className: "hidden lg:table-cell",
-    },
-    ...(role === "admin" || role === "teacher"
+    ...(role === "admin"
       ? [
           {
             header: "Actions",
@@ -51,39 +37,26 @@ const StudentListPage = async ({
       : []),
   ];
 
-  const renderRow = (item: StudentList) => (
+  const renderRow = (item: User) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight dark:bg-[#18181b] dark:hover:bg-gray-500 dark:even:bg-gray-600"
     >
       <td className="flex items-center gap-4 p-4 justify-center">
-        <Image
-          src={item.img || "/noAvatar.png"}
-          alt=""
-          width={40}
-          height={40}
-          className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
-        />
         <div className="flex flex-col">
           <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-500">{item.class.name}</p>
+          <p className="text-xs text-gray-500">{item.email}</p>
         </div>
       </td>
       <td className="hidden md:table-cell text-center">{item.username}</td>
-      <td className="hidden md:table-cell text-center">{item.phone}</td>
-      <td className="hidden md:table-cell text-center">{item.address}</td>
-      <td>
-        <div className="flex items-center gap-2 justify-center">
-          <Link href={`/dashboard/list/students/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-              <Image src="/view.png" alt="" width={16} height={16} />
-            </button>
-          </Link>
-          {role === "admin" && 
-          <FormContainer table="student" type="delete" id={item.id} />
-          }
-        </div>
-      </td>
+      {role === "admin" && (
+        <td>
+          <div className="flex items-center gap-2 justify-center">
+            <FormContainer table="users" type="update" data={item} />
+            <FormContainer table="users" type="delete" id={item.id} />
+          </div>
+        </td>
+      )}
     </tr>
   );
 
@@ -92,44 +65,35 @@ const StudentListPage = async ({
   const p = page ? parseInt(page) : 1;
   const itemsPerPage = perPage ? parseInt(perPage) : ITEM_PER_PAGE;
 
-  // URL PARAMS CONDITION
-  const query: Prisma.StudentWhereInput = {};
+  const query: Prisma.UserWhereInput = {
+    role: "ADMIN", // Filter only admin users
+  };
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "studentId":
-            query.username = { contains: value, mode: "insensitive" }; // Fix: Directly filter by studentId
-            break;
-          case "search":
-            query.name = { contains: value, mode: "insensitive" };
-
-            break;
-          default:
-            break;
-        }
+      if (value !== undefined && key === "search") {
+        query.OR = [
+          { name: { contains: value, mode: "insensitive" } },
+          { email: { contains: value, mode: "insensitive" } },
+          { username: { contains: value, mode: "insensitive" } },
+        ];
       }
     }
   }
-  
+
   const [data, count] = await prisma.$transaction([
-    prisma.student.findMany({
+    prisma.user.findMany({
       where: query,
-      include: {
-        class: true,
-      },
       take: itemsPerPage,
       skip: itemsPerPage * (p - 1),
     }),
-    prisma.student.count({ where: query }),
+    prisma.user.count({ where: query }),
   ]);
 
   return (
     <div className="bg-white dark:bg-[#18181b] p-4 rounded-md flex-1 m-4 mt-0">
-      {/* TOP */}
       <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">All Students</h1>
+        <h1 className="hidden md:block text-lg font-semibold">All Admins</h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
@@ -139,18 +103,14 @@ const StudentListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && 
-            <FormContainer table="student" type="create" />
-            }
+            {role === "admin" && <FormContainer table="users" type="create" />}
           </div>
         </div>
       </div>
-      {/* LIST */}
       <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION */}
       <Pagination page={p} count={count} perPage={itemsPerPage} />
     </div>
   );
 };
 
-export default StudentListPage;
+export default AdminsPage;

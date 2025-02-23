@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   Sidebar,
@@ -21,18 +20,22 @@ import { CiWallet } from "react-icons/ci";
 import { MdAdminPanelSettings, MdOutlinePayments } from "react-icons/md";
 import { RiFileList3Line } from "react-icons/ri";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
-import { GiNotebook } from "react-icons/gi";
-import { MdOutlineEventNote } from "react-icons/md";
-import { PiExam } from "react-icons/pi";
+import { GiNotebook, GiTeacher, GiNewspaper } from "react-icons/gi";
+import { MdOutlineEventNote, MdSpaceDashboard } from "react-icons/md";
+import { PiExam, PiChalkboardTeacherFill } from "react-icons/pi";
 import { RiPagesLine } from "react-icons/ri";
-import { User } from "lucide-react";
 import { LogoutButton } from "../auth/LogoutButton";
 import { useSession } from "next-auth/react";
-import { FaAmazonPay } from "react-icons/fa";
+import { FaAmazonPay, FaUsers, FaUsersCog } from "react-icons/fa";
+import { ImBooks } from "react-icons/im";
+import { GrAnnounce, GrMoney } from "react-icons/gr";
+import { IoPersonAddSharp } from "react-icons/io5";
+import { LiaChalkboardTeacherSolid } from "react-icons/lia";
+import { FaUsersRectangle } from "react-icons/fa6";
 
 // Define the structure of the menu items
 interface MenuItem {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   href: string;
   visible: string[];
@@ -52,78 +55,78 @@ interface MenuItem2 {
 
 const menuItems: MenuItem[] = [
   {
-    icon: "/home.png",
+    icon: <MdSpaceDashboard />,
     label: "Admin Dashboard",
     href: "/admin",
     visible: ["admin"],
   },
   {
-    icon: "/home.png",
+    icon: <MdSpaceDashboard />,
     label: "Teacher Dashboard",
     href: "/teacher",
     visible: ["teacher"],
   },
   {
-    icon: "/home.png",
+    icon: <MdSpaceDashboard />,
     label: "Student Dashboard",
     href: "/student",
     visible: ["student"],
   },
   {
-    icon: "/announcement.png",
+    icon: <GrAnnounce />,
     label: "Announcements",
     href: "/list/announcements",
     visible: ["admin", "teacher", "student"],
   },
   {
-    icon: "/student.png",
+    icon: <IoPersonAddSharp />,
     label: "Admission",
     href: "/list/admission",
     visible: ["admin"],
   },
   {
-    icon: "/teacher.png",
+    icon: <LiaChalkboardTeacherSolid />,
     label: "Teachers",
     href: "/list/teachers",
     visible: ["admin", "teacher"],
   },
 
   {
-    icon: "/student.png",
+    icon: <PiChalkboardTeacherFill />,
     label: "Students",
     href: "/list/students",
     visible: ["admin", "teacher"],
   },
 
   {
-    icon: "/subject.png",
+    icon: <ImBooks />,
     label: "Subjects",
     href: "/list/subjects",
     visible: ["admin"],
   },
   {
-    icon: "/class.png",
+    icon: <GiTeacher />,
     label: "Classes",
     href: "/list/classes",
     visible: ["admin", "teacher"],
   },
 
   {
-    icon: "/assignment.png",
+    icon: <GiNewspaper />,
     label: "Assignments",
     href: "/list/assignments",
     visible: ["teacher", "student"],
   },
 
   {
-    icon: "/attendance.png",
+    icon: <FaUsersRectangle />,
     label: "Attendance",
     href: "/list/attendance",
     visible: ["admin", "teacher"],
   },
 
   {
-    icon: "/finance.png",
+    icon: <GrMoney />,
     label: "Finance",
     href: "/list/finance",
     visible: ["admin"],
@@ -191,18 +194,18 @@ const menuItems2: MenuItem2[] = [
   },
 
   {
-    icon: <User />,
+    icon: <FaUsersCog />,
     label: "Users Managment",
     visible: ["admin"],
     subLevel: [
       {
         subIcon: <MdAdminPanelSettings />,
-        subLabel: "Admin",
+        subLabel: "Admins",
         subHref: "admins",
         visible: ["admin"],
       },
       {
-        subIcon: <User />,
+        subIcon: <FaUsers />,
         subLabel: "Users",
         subHref: "users",
         visible: ["admin"],
@@ -212,8 +215,6 @@ const menuItems2: MenuItem2[] = [
 ];
 
 // First, create a client component for the logout button
-
-
 // Then use it in the server component Menu
 const Menu = () => {
   const { data: session } = useSession();
@@ -222,18 +223,18 @@ const Menu = () => {
   return (
     <Sidebar className="pt-16 ">
       <SidebarContent className="pb-5">
-        <div className="flex flex-col gap-3 pt-2 pl-2 ">
+        <div className="flex flex-col gap-3 pt-2 ">
           <SidebarMenu>
             {menuItems.map((item) => {
               if (item.visible.includes(role)) {
                 return (
-                  <SidebarMenuItem className="overflow-hidden" key={item.label}>
+                  <SidebarMenuItem className="overflow-hidden pl-2" key={item.label}>
                     <SidebarMenuButton asChild>
                       <Link
                         href={`/dashboard${item.href}`}
                         className="flex pl-2 items-center gap-4 text-gray-500 py-2 rounded-md hover:scale-105 transition-all duration-300"
                       >
-                        <Image src={item.icon} alt="" width={20} height={20} />
+                        {item.icon}
                         <span className="hidden lg:block">{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -287,8 +288,8 @@ const Menu = () => {
       <SidebarSeparator />
       <SidebarFooter>
         <SidebarMenu>
-        <SidebarMenuItem>
-          <LogoutButton />
+          <SidebarMenuItem>
+            <LogoutButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
