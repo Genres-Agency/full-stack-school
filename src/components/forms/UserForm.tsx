@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
 import { UserSchema, userSchema } from "@/schema/formValidationSchemas";
 import { createUser, updateUser } from "@/lib/userAction";
 import { useRouter } from "next/navigation";
@@ -53,8 +53,10 @@ const UserForm = ({
         const hashedPassword = await bcrypt.hash(formData.password, salt);
         formData.password = hashedPassword;
       }
-      
-      formAction(formData);
+      React.startTransition(() => {
+        formAction(formData);
+      });
+
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("Failed to submit form");
@@ -66,7 +68,7 @@ const UserForm = ({
       <h1 className="text-xl font-semibold">
         {type === "create" ? "Create a new user" : "Update the user"}
       </h1>
-      
+
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
           label="Name*"
@@ -127,14 +129,14 @@ const UserForm = ({
           )}
         </div>
       </div>
-      
+
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-        <button 
-        type="submit" 
-        disabled={loading} 
-        className={`bg-blue-400 text-white p-2 rounded-md ${loading ? "opacity-50" : ""}`}
+      <button
+        type="submit"
+        disabled={loading}
+        className={`bg-sky-400 text-white p-2 rounded-md ${loading ? "opacity-50" : ""}`}
       >
         {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
       </button>

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 const paymentMethods = [
-  { id: "bkash", name: "bKash", logo: "/bkash.svg" },
+  { id: "bkash", name: "bKash", logo: "/BKash.svg" },
   { id: "Nagad", name: "Nagad", logo: "/nagad.svg" },
   { id: "Roket", name: "Roket", logo: "/roket.svg" },
 ];

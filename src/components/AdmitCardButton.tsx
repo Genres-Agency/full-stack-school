@@ -41,7 +41,7 @@ const AdmitCardButton = ({
         <button
           disabled={loading}
           className={`px-4 py-2 rounded-md text-white ${
-            loading ? 'bg-gray-400' : 'bg-blue-300 hover:bg-blue-400'
+            loading ? 'bg-gray-400' : 'bg-sky-300 hover:bg-sky-400'
           }`}
         >
           {loading ? 'Generating...' : <><MdDownload className="inline-block mr-2" /> Admit Card</>}

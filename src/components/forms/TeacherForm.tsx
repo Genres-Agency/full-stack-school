@@ -251,7 +251,7 @@ const TeacherForm = ({
       <button 
         type="submit" 
         disabled={loading} 
-        className={`bg-blue-400 text-white p-2 rounded-md ${loading ? "opacity-50" : ""}`}
+        className={`bg-sky-400 text-white p-2 rounded-md ${loading ? "opacity-50" : ""}`}
       >
         {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
       </button>

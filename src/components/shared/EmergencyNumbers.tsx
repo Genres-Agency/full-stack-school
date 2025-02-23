@@ -28,7 +28,7 @@ const EmergencyNumbers: React.FC = () => {
         {emergencyNumbers.map((item: { service: string; number: string }, index) => (
           <li key={index} className="px-4 py-2 flex justify-between items-center even:bg-[#edf9fd] dark:even:bg-gray-600">
             <span className="text-gray-700 dark:text-gray-400">{item.service}</span>
-            <span className="text-[#216a21] font-semibold">{item.number}</span>
+            <span className="text-green-500 font-semibold">{item.number}</span>
           </li>
         ))}
       </ul>

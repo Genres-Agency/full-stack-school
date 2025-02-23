@@ -32,7 +32,7 @@ export default function PaymentButton() {
     <button
       onClick={handlePayment}
       disabled={loading}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md"
+      className="px-4 py-2 bg-sky-600 text-white rounded-md"
     >
       {loading ? "Processing..." : "Pay Now"}
     </button>

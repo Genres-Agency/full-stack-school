@@ -5,7 +5,6 @@ import {
   ResultSchema,
 } from "../schema/formValidationSchemas";
 import prisma from "./prisma";
-// import { clerkClient } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
 
 type CurrentState = { success: boolean; error: boolean };
@@ -18,7 +17,7 @@ type ResultActionResponse = {
 export const createResult = async (
     data: { studentId: string; subjectId: number; marks: number; grade: string }[]
   ) => {
-    // console.log("Function createResult called with data:", data);
+  console.log("Function createResult called with data:", data);
   
     try {
       if (!data || data.length === 0) {

@@ -469,7 +469,7 @@ const AdmissionForm: React.FC<FormProps> = ({
         <button
           type="submit"
           disabled={loading}
-          className={`w-full bg-blue-500 text-white p-2 rounded-md mt-4 ${loading ? "opacity-50" : ""}`}
+          className={`w-full bg-sky-500 text-white p-2 rounded-md mt-4 ${loading ? "opacity-50" : ""}`}
         >
           {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
         </button>

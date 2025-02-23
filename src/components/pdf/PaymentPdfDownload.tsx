@@ -28,7 +28,7 @@ const DownloadPaymentPDF: React.FC<PaymentHistory & { student: { name: string; s
   return (
     <button
       onClick={downloadPDF}
-      className="bg-blue-300 text-white p-1 rounded-md flex items-center gap-2 px-2"
+      className="bg-sky-300 text-white p-1 rounded-md flex items-center gap-2 px-2"
     >
       <FaDownload className="w-3 h-3" /> Invoice
     </button>

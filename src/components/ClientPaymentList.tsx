@@ -44,6 +44,7 @@ const ClientPaymentList = ({ students, total, role, page, perPage, payments}: { 
     { header: "Due Fees", accessor: "due" },
     { header: "Paid Fees", accessor: "paid" },
     { header: "Status", accessor: "status" },
+    { header: "Action", accessor: "Action" },
 
   ];
 

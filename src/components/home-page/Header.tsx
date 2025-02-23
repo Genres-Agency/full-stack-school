@@ -91,7 +91,7 @@ const Header = () => {
                 {/* Mobile navigation */}
                 <nav
                     className={`${isMenuOpen ? "block" : "hidden"
-                        } md:hidden absolute left-0 right-0 top-full bg-blue-900 shadow-lg`}
+                        } md:hidden absolute left-0 right-0 top-full bg-sky-900 shadow-lg`}
                 >
                     <ul className="px-4 py-2">
                         {menuItems.map((item) => (

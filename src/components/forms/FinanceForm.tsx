@@ -105,7 +105,7 @@ const FinanceForm = ({
       {/* Submit Button */}
       <button
         type="submit"
-        className="bg-blue-500 text-white p-2 rounded-md disabled:opacity-50"
+        className="bg-sky-500 text-white p-2 rounded-md disabled:opacity-50"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Processing..." : type === "create" ? "Create" : "Update"}

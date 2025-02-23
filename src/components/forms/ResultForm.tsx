@@ -15,10 +15,13 @@ const ResultForm = ({
   type,
   data,
   setOpen,
+  relatedData,
 }: {
+
   type: "create" | "update";
   data?: any; // Expected to contain studentId and existing results if updating
   setOpen: Dispatch<SetStateAction<boolean>>;
+    relatedData?: any;
 }) => {
   const {
     register,
@@ -119,7 +122,7 @@ const ResultForm = ({
               <label className="block font-medium">Subject ID:</label>
               <Input
                 type="number"
-                placeholder="Subject ID"
+                placeholder="Subject code"
                 {...register(`subjects.${index}.subjectId`, { valueAsNumber: true})}
                 min={0}
 
@@ -144,12 +147,12 @@ const ResultForm = ({
               required
             />
             </div>
-            <Button type="button" className="bg-red-500 hover:text-red-500 mt-6 text-white" onClick={() => remove(index)}>Remove</Button>
+            <Button type="button" className="bg-red-500 hover:bg-red-600 mt-6 text-white" onClick={() => remove(index)}>Remove</Button>
             
           </div>
         ))}
         <Button
-          className="bg-green-400 mt-2 flex order-end items-center text-white hover:text-green-500"
+          className="bg-green-400 mt-2 flex order-end items-center text-white hover:bg-green-500"
           type="button"
           onClick={() => append({ subjectId: 0, subjectName: "", marks: 0 })}
         >
@@ -159,7 +162,7 @@ const ResultForm = ({
 
       <button
         type="submit"
-        className="bg-blue-500 text-white p-2 rounded-md disabled:opacity-50 w-full"
+        className="bg-sky-500 text-white p-2 rounded-md disabled:opacity-50 w-full"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Processing..." : type === "create" ? "Create" : "Update"}

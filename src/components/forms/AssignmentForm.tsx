@@ -6,7 +6,7 @@ import InputField from "../InputField";
 import { assignmentSchema, AssignmentSchema } from "@/schema/formValidationSchemas";
 import { createAssignment, updateAssignment } from "@/lib/assignmentAction";
 import { useFormState } from "react-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -35,7 +35,9 @@ const AssignmentForm = ({
   );
 
   const onSubmit = handleSubmit((formData) => {
-    formAction(formData);
+    React.startTransition(() => {
+      formAction(formData);
+    });
   });
 
   const router = useRouter();
@@ -50,7 +52,7 @@ const AssignmentForm = ({
 
   const { subjects, classes, teachers } = relatedData || {};
 
-  console.log(relatedData);
+  // console.log(relatedData);
   
 
   return (
@@ -116,7 +118,7 @@ const AssignmentForm = ({
 
       <button
         type="submit"
-        className="bg-blue-500 text-white p-2 rounded-md disabled:opacity-50"
+        className="bg-sky-500 text-white p-2 rounded-md disabled:opacity-50"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Processing..." : type === "create" ? "Create" : "Update"}

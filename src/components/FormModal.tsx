@@ -217,7 +217,7 @@ const forms: {
 
   result: (setOpen, type, data, relatedData) => (
     // <ResultForm type={type} data={data} setOpen={setOpen} />
-    <ResultForm type={type} data={data} setOpen={setOpen} />
+    <ResultForm type={type} data={data} setOpen={setOpen} relatedData={relatedData} />
   ),
 };
 type TableType = keyof typeof forms;

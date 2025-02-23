@@ -54,7 +54,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, defaultImage })
         type="file"
         accept="image/*"
         onChange={handleImageSelection}
-        className="cursor-pointer block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-400 file:text-white hover:file:bg-blue-500"
+        className="cursor-pointer block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-sky-400 file:text-white hover:file:bg-sky-500"
       />
 
       {error && <p className="text-red-500 text-sm">{error}</p>}

@@ -157,7 +157,7 @@ const AnnouncementForm: React.FC<FormProps> = ({
       <button
         type="submit"
         disabled={loading}
-        className={`bg-blue-400 text-white p-2 rounded-md ${
+        className={`bg-sky-400 text-white p-2 rounded-md ${
           loading ? "opacity-50" : ""
         }`}
       >

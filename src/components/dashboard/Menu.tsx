@@ -32,16 +32,15 @@ import { IoPersonAddSharp } from "react-icons/io5";
 import { LiaChalkboardTeacherSolid } from "react-icons/lia";
 import { CiWallet } from "react-icons/ci";
 import { FaUsersRectangle } from "react-icons/fa6";
-import { UserNav } from "../shared/UserNav";
 import { LogoutButton } from "../auth/LogoutButton";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { ChevronRight, ChevronsUpDown, CircleUserRound } from "lucide-react";
+import { ChevronsUpDown, CircleUserRound } from "lucide-react";
 
 const menuItems = [
-  { icon: <MdSpaceDashboard />, label: "Admin Dashboard", href: "/admin", visible: ["admin"] },
-  { icon: <MdSpaceDashboard />, label: "Teacher Dashboard", href: "/teacher", visible: ["teacher"] },
-  { icon: <MdSpaceDashboard />, label: "Student Dashboard", href: "/student", visible: ["student"] },
+  { icon: <MdSpaceDashboard />, label: "Dashboard", href: "/admin", visible: ["admin"] },
+  { icon: <MdSpaceDashboard />, label: "Dashboard", href: "/teacher", visible: ["teacher"] },
+  { icon: <MdSpaceDashboard />, label: "Dashboard", href: "/student", visible: ["student"] },
   { icon: <GrAnnounce />, label: "Announcements", href: "/list/announcements", visible: ["admin", "teacher", "student"] },
   { icon: <IoPersonAddSharp />, label: "Admission", href: "/list/admission", visible: ["admin"] },
   { icon: <LiaChalkboardTeacherSolid />, label: "Teachers", href: "/list/teachers", visible: ["admin", "teacher"] },
